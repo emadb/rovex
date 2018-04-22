@@ -17,6 +17,16 @@ defmodule Rover.Application do
     Supervisor.start_link(children, opts)
   end
 
+  def dispatch(key, message) do
+    Registry.dispatch(Rover.Registry, key, fn entries ->
+      for {pid, _} <- entries do
+        IO.inspect pid
+        send(pid, message)
+      end
+    end)
+  end
+
+
   defp dispatch do
     [
       {:_,

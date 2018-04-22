@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>Rover Controller</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  
+</head>
+<body>
+  <h1>Rover monitor</h1>
+
+  <script>
+    const connection = new WebSocket('ws://localhost:3000/ws')
+    connection.onopen = () => { 
+      console.log('connection ready')
+    //  heartBeat = setInterval(() => connection.send('ping'), 5000)
+    }
+    connection.onerror = (err) => {
+      console.log('websocket error', err)
+    }
+    connection.onmessage = (evt) => {
+      console.log('message', evt)
+    }
+  
+  </script>
+
+</body>
+</html>

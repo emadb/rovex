@@ -32,10 +32,11 @@ defmodule Rover.Web.Router do
   end
 
   post "/simulator" do
-    count = conn.body_params["count"]
-    RoverController.create_multiple_rovers(count)
-    RoverController.send_multiple_commands(count)
-    send_resp(conn, 201, encode(%{}))
+    rover_count = conn.body_params["rover_count"]
+    command_count = conn.body_params["command_count"]
+    RoverController.create_multiple_rovers(rover_count)
+    RoverController.send_multiple_commands(rover_count, command_count)
+    send_resp(conn, 201, encode(%{message: "running"}))
   end
 
   defp encode(data) do

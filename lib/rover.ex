@@ -55,6 +55,7 @@ defmodule Rover do
       :W -> %Rover{x: state.x - 1, y: state.y, direction: state.direction}
     end
 
+    Rover.Web.WsServer.send_message_to_client("forward!!!!")
     IO.inspect new_state, label: "go_forward"
 
     {:reply, {:ok, {new_state.x, new_state.y, new_state.direction}}, new_state}
