@@ -8,7 +8,6 @@ defmodule RoverTest do
     assert state == {1, 3, :N}
   end
 
-
   test "handle_call :get_state should return current state" do
     {:reply, {:ok, res}, _state} = Rover.handle_call(:get_state, [], %Rover{x: 1, y: 3, direction: :N})
     assert res == {1, 3, :N}

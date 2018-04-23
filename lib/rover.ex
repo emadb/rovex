@@ -34,15 +34,6 @@ defmodule Rover do
     GenServer.call(RegistryHelper.get_pid(name), :rotate_right)
   end
 
-
-  def crash(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :crash)
-  end
-
-  def handle_call(:crash, _from, state) do
-    {:stop, "self_crash", state}
-  end
-
   def handle_call(:get_state, _from, state) do
     {:reply, {:ok, {state.x, state.y, state.direction}}, state}
   end
@@ -55,10 +46,9 @@ defmodule Rover do
       :W -> %Rover{x: state.x - 1, y: state.y, direction: state.direction}
     end
 
-    Rover.Web.WsServer.send_message_to_client("forward!!!!")
-    IO.inspect new_state, label: "go_forward"
-
-    {:reply, {:ok, {new_state.x, new_state.y, new_state.direction}}, new_state}
+    reply = {new_state.x, new_state.y, new_state.direction}
+    Rover.Web.WsServer.send_message_to_client(new_state)
+    {:reply, {:ok, reply}, new_state}
   end
 
   def handle_call(:rotate_left, _from, state) do
@@ -69,9 +59,10 @@ defmodule Rover do
       :W -> %Rover{x: state.x, y: state.y, direction: :S}
     end
 
-    IO.inspect new_state, label: "rotate_left"
+    reply = {new_state.x, new_state.y, new_state.direction}
+    Rover.Web.WsServer.send_message_to_client(new_state)
+    {:reply, {:ok, reply}, new_state}
 
-    {:reply, {:ok, {new_state.x, new_state.y, new_state.direction}}, new_state}
   end
 
   def handle_call(:go_backward, _from, state) do
@@ -82,9 +73,10 @@ defmodule Rover do
       :W -> %Rover{x: state.x + 1, y: state.y, direction: state.direction}
     end
 
-    IO.inspect new_state, label: "go_backward"
+    reply = {new_state.x, new_state.y, new_state.direction}
+    Rover.Web.WsServer.send_message_to_client(new_state)
+    {:reply, {:ok, reply}, new_state}
 
-    {:reply, {:ok, {new_state.x, new_state.y, new_state.direction}}, new_state}
   end
 
   def handle_call(:rotate_right, _from, state) do
@@ -95,12 +87,8 @@ defmodule Rover do
       :W -> %Rover{x: state.x, y: state.y, direction: :N}
     end
 
-    IO.inspect new_state, label: "rotate_right"
-
-    {:reply, {:ok, {new_state.x, new_state.y, new_state.direction}}, new_state}
+    reply = {new_state.x, new_state.y, new_state.direction}
+    Rover.Web.WsServer.send_message_to_client(new_state)
+    {:reply, {:ok, reply}, new_state}
   end
-
-
-
-
 end

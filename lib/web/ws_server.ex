@@ -1,8 +1,7 @@
 defmodule Rover.Web.WsServer do
-
-
   @behaviour :cowboy_websocket_handler
-  @timeout 60000 # terminate if no activity for one minute
+  # terminate if no activity for one minute
+  @timeout 60000
   @registration_key "ws_server"
 
   def send_message_to_client(message) do
@@ -14,7 +13,7 @@ defmodule Rover.Web.WsServer do
   end
 
   def websocket_init(_type, req, _opts) do
-    #{:ok, _} = RegistryHelper.register(@registration_key)
+    # {:ok, _} = RegistryHelper.register(@registration_key)
     {:ok, _} = Registry.register(Rover.Registry, @registration_key, [])
     state = %{}
     {:ok, req, state, @timeout}

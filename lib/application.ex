@@ -7,10 +7,7 @@ defmodule Rover.Application do
     children = [
       supervisor(Registry, [:unique, Rover.Registry]),
       Plug.Adapters.Cowboy.child_spec(:http, Rover.Web.Router, [], port: 3000, dispatch: dispatch()),
-      %{
-        id: RoverFactory,
-        start: {RoverFactory, :start_link, [[]]}
-      }
+      %{id: RoverFactory, start: {RoverFactory, :start_link, [[]]}}
     ]
 
     opts = [strategy: :one_for_one, name: Rover.Supervisor]
