@@ -3,7 +3,7 @@ defmodule Rover do
 
   @type direction :: :N | :S | :E | :W
 
-  defstruct [:x, :y, :direction]
+  defstruct [:x, :y, :direction, :name]
 
   def start_link({x, y, d, name}) do
     GenServer.start_link(__MODULE__, {x, y, d, name}, name: RegistryHelper.create_key(name))
@@ -11,7 +11,16 @@ defmodule Rover do
 
   def init({x, y, d, name}) do
     {:ok, _} = RegistryHelper.register(name)
-    {:ok, %Rover{x: x, y: y, direction: d}}
+    WorldMap.update_rover(name, x, y)
+    {:ok, %Rover{x: x, y: y, direction: d, name: name}}
+  end
+
+  def crash(name) do
+    GenServer.call(RegistryHelper.get_pid(name), :crash)
+  end
+
+  def handle_call(:crash, _from, state) do
+    {:stop, "self_crash", state}
   end
 
   def get_state(name) do
@@ -19,26 +28,26 @@ defmodule Rover do
   end
 
   def go_forward(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :go_forward)
+    GenServer.cast(RegistryHelper.get_pid(name), :go_forward)
   end
 
   def rotate_left(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :rotate_left)
+    GenServer.cast(RegistryHelper.get_pid(name), :rotate_left)
   end
 
   def go_backward(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :go_backward)
+    GenServer.cast(RegistryHelper.get_pid(name), :go_backward)
   end
 
   def rotate_right(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :rotate_right)
+    GenServer.cast(RegistryHelper.get_pid(name), :rotate_right)
   end
 
   def handle_call(:get_state, _from, state) do
     {:reply, {:ok, {state.x, state.y, state.direction}}, state}
   end
 
-  def handle_call(:go_forward, _from, state) do
+  def handle_cast(:go_forward, state) do
     new_state = case state.direction do
       :N -> %Rover{x: state.x, y: state.y + 1, direction: state.direction}
       :S -> %Rover{x: state.x, y: state.y - 1, direction: state.direction}
@@ -46,12 +55,12 @@ defmodule Rover do
       :W -> %Rover{x: state.x - 1, y: state.y, direction: state.direction}
     end
 
-    reply = {new_state.x, new_state.y, new_state.direction}
+    WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
-    {:reply, {:ok, reply}, new_state}
+    {:noreply, new_state}
   end
 
-  def handle_call(:rotate_left, _from, state) do
+  def handle_cast(:rotate_left, state) do
     new_state = case state.direction do
       :N -> %Rover{x: state.x, y: state.y, direction: :W}
       :S -> %Rover{x: state.x, y: state.y, direction: :E}
@@ -59,13 +68,13 @@ defmodule Rover do
       :W -> %Rover{x: state.x, y: state.y, direction: :S}
     end
 
-    reply = {new_state.x, new_state.y, new_state.direction}
+    WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
-    {:reply, {:ok, reply}, new_state}
+    {:noreply, new_state}
 
   end
 
-  def handle_call(:go_backward, _from, state) do
+  def handle_cast(:go_backward, state) do
     new_state = case state.direction do
       :N -> %Rover{x: state.x, y: state.y - 1, direction: state.direction}
       :S -> %Rover{x: state.x, y: state.y + 1, direction: state.direction}
@@ -73,13 +82,13 @@ defmodule Rover do
       :W -> %Rover{x: state.x + 1, y: state.y, direction: state.direction}
     end
 
-    reply = {new_state.x, new_state.y, new_state.direction}
+    WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
-    {:reply, {:ok, reply}, new_state}
+    {:noreply, new_state}
 
   end
 
-  def handle_call(:rotate_right, _from, state) do
+  def handle_cast(:rotate_right, state) do
     new_state = case state.direction do
       :N -> %Rover{x: state.x, y: state.y, direction: :E}
       :S -> %Rover{x: state.x, y: state.y, direction: :W}
@@ -87,8 +96,8 @@ defmodule Rover do
       :W -> %Rover{x: state.x, y: state.y, direction: :N}
     end
 
-    reply = {new_state.x, new_state.y, new_state.direction}
+    WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
-    {:reply, {:ok, reply}, new_state}
+    {:noreply, new_state}
   end
 end

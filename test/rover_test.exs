@@ -13,24 +13,31 @@ defmodule RoverTest do
     assert res == {1, 3, :N}
   end
 
-  test "handle_call :go_forward should return updated state" do
-    {:reply, {:ok, res}, _state} = Rover.handle_call(:go_forward, [], %Rover{x: 1, y: 3, direction: :N})
-    assert res == {1, 4, :N}
+  test "handle_cast :go_forward should return updated state" do
+    {:noreply, state} = Rover.handle_cast(:go_forward, %Rover{x: 1, y: 3, direction: :N})
+    assert state.x == 1
+    assert state.y == 4
+    assert state.direction == :N
   end
 
-  test "handle_call :rotate_left should return updated state" do
-    {:reply, {:ok, res}, _state} = Rover.handle_call(:rotate_left, [], %Rover{x: 1, y: 3, direction: :N})
-    assert res == {1, 3, :W}
+  test "handle_cast :rotate_left should return updated state" do
+    {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :N})
+    assert state.x == 1
+    assert state.y == 3
+    assert state.direction == :W
   end
 
-
-  test "handle_call :go_backward should return updated state" do
-    {:reply, {:ok, res}, _state} = Rover.handle_call(:go_backward, [], %Rover{x: 1, y: 3, direction: :N})
-    assert res == {1, 2, :N}
+  test "handle_cast :go_backward should return updated state" do
+    {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 1, y: 3, direction: :N})
+    assert state.x == 1
+    assert state.y == 2
+    assert state.direction == :N
   end
 
-  test "handle_call :rotate_right should return updated state" do
-    {:reply, {:ok, res}, _state} = Rover.handle_call(:rotate_right, [], %Rover{x: 1, y: 3, direction: :N})
-    assert res == {1, 3, :E}
+  test "handle_cast :rotate_right should return updated state" do
+    {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :N})
+    assert state.x == 1
+    assert state.y == 3
+    assert state.direction == :E
   end
 end

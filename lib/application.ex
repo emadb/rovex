@@ -1,13 +1,16 @@
 defmodule Rover.Application do
   use Application
 
+  @rover_factory Application.get_env(:rover, :rover_factory)
+
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
 
     children = [
       supervisor(Registry, [:unique, Rover.Registry]),
       Plug.Adapters.Cowboy.child_spec(:http, Rover.Web.Router, [], port: 3000, dispatch: dispatch()),
-      %{id: RoverFactory, start: {RoverFactory, :start_link, [[]]}}
+      %{id: @rover_factory, start: {@rover_factory, :start_link, [[]]}},
+      worker(WorldMap, [@rover_factory])
     ]
 
     opts = [strategy: :one_for_one, name: Rover.Supervisor]
