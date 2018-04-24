@@ -32,6 +32,8 @@ defmodule WorldMap do
         |> Enum.filter(fn r -> r.x == x && r.y == y end)
         |> Enum.each(fn r ->
             IO.inspect r, label: "KILL"
+            #pid = RegistryHelper.get_pid(r.name)
+            #Process.exit(pid, :kill)
             state.rover_factory.kill(r.name)
           end)
 
