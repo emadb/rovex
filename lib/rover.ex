@@ -19,10 +19,6 @@ defmodule Rover do
     GenServer.call(RegistryHelper.get_pid(name), :crash)
   end
 
-  def handle_call(:crash, _from, state) do
-    {:stop, "self_crash", state}
-  end
-
   def get_state(name) do
     GenServer.call(RegistryHelper.get_pid(name), :get_state)
   end
@@ -47,12 +43,16 @@ defmodule Rover do
     {:reply, {:ok, {state.x, state.y, state.direction}}, state}
   end
 
+  def handle_call(:crash, _from, state) do
+    {:stop, "self_crash", state}
+  end
+
   def handle_cast(:go_forward, state) do
     new_state = case state.direction do
-      :N -> %Rover{x: state.x, y: state.y + 1, direction: state.direction}
-      :S -> %Rover{x: state.x, y: state.y - 1, direction: state.direction}
-      :E -> %Rover{x: state.x + 1, y: state.y, direction: state.direction}
-      :W -> %Rover{x: state.x - 1, y: state.y, direction: state.direction}
+      :N -> %Rover{x: state.x, y: state.y + 1, direction: state.direction, name: state.name}
+      :S -> %Rover{x: state.x, y: state.y - 1, direction: state.direction, name: state.name}
+      :E -> %Rover{x: state.x + 1, y: state.y, direction: state.direction, name: state.name}
+      :W -> %Rover{x: state.x - 1, y: state.y, direction: state.direction, name: state.name}
     end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
@@ -62,10 +62,10 @@ defmodule Rover do
 
   def handle_cast(:rotate_left, state) do
     new_state = case state.direction do
-      :N -> %Rover{x: state.x, y: state.y, direction: :W}
-      :S -> %Rover{x: state.x, y: state.y, direction: :E}
-      :E -> %Rover{x: state.x, y: state.y, direction: :N}
-      :W -> %Rover{x: state.x, y: state.y, direction: :S}
+      :N -> %Rover{x: state.x, y: state.y, direction: :W, name: state.name}
+      :S -> %Rover{x: state.x, y: state.y, direction: :E, name: state.name}
+      :E -> %Rover{x: state.x, y: state.y, direction: :N, name: state.name}
+      :W -> %Rover{x: state.x, y: state.y, direction: :S, name: state.name}
     end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
@@ -76,10 +76,10 @@ defmodule Rover do
 
   def handle_cast(:go_backward, state) do
     new_state = case state.direction do
-      :N -> %Rover{x: state.x, y: state.y - 1, direction: state.direction}
-      :S -> %Rover{x: state.x, y: state.y + 1, direction: state.direction}
-      :E -> %Rover{x: state.x - 1, y: state.y, direction: state.direction}
-      :W -> %Rover{x: state.x + 1, y: state.y, direction: state.direction}
+      :N -> %Rover{x: state.x, y: state.y - 1, direction: state.direction, name: state.name}
+      :S -> %Rover{x: state.x, y: state.y + 1, direction: state.direction, name: state.name}
+      :E -> %Rover{x: state.x - 1, y: state.y, direction: state.direction, name: state.name}
+      :W -> %Rover{x: state.x + 1, y: state.y, direction: state.direction, name: state.name}
     end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
@@ -90,10 +90,10 @@ defmodule Rover do
 
   def handle_cast(:rotate_right, state) do
     new_state = case state.direction do
-      :N -> %Rover{x: state.x, y: state.y, direction: :E}
-      :S -> %Rover{x: state.x, y: state.y, direction: :W}
-      :E -> %Rover{x: state.x, y: state.y, direction: :S}
-      :W -> %Rover{x: state.x, y: state.y, direction: :N}
+      :N -> %Rover{x: state.x, y: state.y, direction: :E, name: state.name}
+      :S -> %Rover{x: state.x, y: state.y, direction: :W, name: state.name}
+      :E -> %Rover{x: state.x, y: state.y, direction: :S, name: state.name}
+      :W -> %Rover{x: state.x, y: state.y, direction: :N, name: state.name}
     end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
