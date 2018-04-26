@@ -71,7 +71,6 @@ defmodule Rover do
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
     {:noreply, new_state}
-
   end
 
   def handle_cast(:go_backward, state) do

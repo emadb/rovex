@@ -2,17 +2,18 @@
 defmodule Rover.Web.Router do
   use Plug.Router
 
-  # plug Corsica, max_age: 600, origins: "*"
-  # plug PlugBasicAuth,
-  #   username: Application.get_env(:api, :basic_auth_user),
-  #   password: Application.get_env(:api, :basic_auth_password)
-
   plug Plug.Parsers, parsers: [:json], json_decoder: Poison
+  plug Plug.Static, at: "/", from: :server
   plug :match
   plug :dispatch
 
   get "/ping" do
     send_resp(conn, 200, encode(%{message: "pong"}))
+  end
+
+  get "/" do
+    conn = put_resp_content_type(conn, "text/html")
+    send_file(conn, 200, "priv/static/index.html")
   end
 
   post "/rover" do
@@ -27,8 +28,8 @@ defmodule Rover.Web.Router do
   post "/command" do
     rover_name = conn.body_params["name"]
     command = String.to_atom(conn.body_params["command"])
-    {:ok, {x, y, d}} = RoverController.send_command(rover_name, command)
-    send_resp(conn, 201, encode(%{x: x, y: y, d: d}))
+    RoverController.send_command(rover_name, command)
+    send_resp(conn, 204, encode(%{}))
   end
 
   post "/simulator" do
