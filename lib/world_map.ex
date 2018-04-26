@@ -20,17 +20,25 @@ defmodule WorldMap do
         index -> List.replace_at(state.rovers, index, %{name: name, x: x, y: y})
       end
 
-    case Enum.any?(new_rovers, fn r -> r.name != name && r.x == x && r.y == y end) do
+    case are_there_collisions(new_rovers, name, x, y) do
       true ->
         new_rovers
-        |> Enum.filter(fn r -> r.x == x && r.y == y end)
+        |> Enum.filter(&same_position(&1, x, y))
         |> Enum.each(fn r -> state.rover_factory.kill(r.name) end)
 
-        new_rovers = Enum.reject(new_rovers, fn r -> r.x == x && r.y == y end)
+        new_rovers = Enum.reject(new_rovers, &same_position(&1, x, y))
         {:reply, :ok, %{state | rovers: new_rovers}}
 
       false ->
         {:reply, :ok, %{state | rovers: new_rovers}}
     end
+  end
+
+  defp same_position(r, x, y) do
+    r.x == x && r.y == y
+  end
+
+  defp are_there_collisions(rovers, name, x, y) do
+    Enum.any?(rovers, fn r -> r.name != name && r.x == x && r.y == y end)
   end
 end
