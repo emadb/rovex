@@ -5,7 +5,11 @@ defmodule RoverFactoryStub do
     GenServer.start_link(__MODULE__, [], name: RoverFactoryStub)
   end
 
-  def kill(name) do
-    IO.inspect name, label: "Killing"
+  def init(args) do
+    {:ok, args}
+  end
+
+  def kill(_name) do
+
   end
 end

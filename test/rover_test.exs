@@ -40,4 +40,62 @@ defmodule RoverTest do
     assert state.y == 3
     assert state.direction == :E
   end
+
+  describe "world wrap" do
+    test "handle_cast :go_forward (N) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_forward, %Rover{x: 2, y: 9, direction: :N})
+      assert state.x == 2
+      assert state.y == 0
+      assert state.direction == :N
+    end
+
+    test "handle_cast :go_backward (N) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 2, y: 0, direction: :N})
+      assert state.x == 2
+      assert state.y == 9
+      assert state.direction == :N
+    end
+
+    test "handle_cast :go_forward (S) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_forward, %Rover{x: 2, y: 0, direction: :S})
+      assert state.x == 2
+      assert state.y == 9
+      assert state.direction == :S
+    end
+
+    test "handle_cast :go_backward (S) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 2, y: 9, direction: :S})
+      assert state.x == 2
+      assert state.y == 0
+      assert state.direction == :S
+    end
+
+    test "handle_cast :go_forward (E) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_forward, %Rover{x: 9, y: 5, direction: :E})
+      assert state.x == 0
+      assert state.y == 5
+      assert state.direction == :E
+    end
+
+    test "handle_cast :go_backward (E) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 0, y: 0, direction: :E})
+      assert state.x == 9
+      assert state.y == 0
+      assert state.direction == :E
+    end
+
+    test "handle_cast :go_forward (W) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_forward, %Rover{x: 0, y: 3, direction: :W})
+      assert state.x == 9
+      assert state.y == 3
+      assert state.direction == :W
+    end
+
+    test "handle_cast :go_backward (W) at the end should wrap around" do
+      {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 9, y: 2, direction: :W})
+      assert state.x == 0
+      assert state.y == 2
+      assert state.direction == :W
+    end
+  end
 end

@@ -10,9 +10,6 @@ defmodule WorldMap do
   end
 
   def update_rover(name, x, y) do
-
-    IO.inspect name, label: "UPDATE"
-
     GenServer.call(__MODULE__, {:update_rover, name, x, y})
   end
 
@@ -31,7 +28,6 @@ defmodule WorldMap do
       new_rovers
         |> Enum.filter(fn r -> r.x == x && r.y == y end)
         |> Enum.each(fn r ->
-            IO.inspect r, label: "KILL"
             #pid = RegistryHelper.get_pid(r.name)
             #Process.exit(pid, :kill)
             state.rover_factory.kill(r.name)

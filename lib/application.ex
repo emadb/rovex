@@ -20,7 +20,6 @@ defmodule Rover.Application do
   def dispatch(key, message) do
     Registry.dispatch(Rover.Registry, key, fn entries ->
       for {pid, _} <- entries do
-        IO.inspect pid
         send(pid, message)
       end
     end)
