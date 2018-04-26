@@ -10,6 +10,5 @@ defmodule RoverFactoryStub do
   end
 
   def kill(_name) do
-
   end
 end
