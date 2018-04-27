@@ -13,4 +13,4 @@
 - [ ] gen_statem (State machine)
 - [ ] behavior per notification (announcer)
 - [ ] rename RoverFactory
-- [ ] brutal kill of rover so that they reborn in the start position 
+- [x] brutal kill of rover so that they reborn in the start position 
