@@ -13,6 +13,7 @@ defmodule Rover do
   end
 
   def init({x, y, d, name}) do
+    Process.flag(:trap_exit, true)
     {:ok, _} = RegistryHelper.register(name)
     WorldMap.update_rover(name, x, y)
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
@@ -158,6 +159,11 @@ defmodule Rover do
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(new_state)
     {:noreply, new_state}
+  end
+
+  def terminate(reason, state) do
+    IO.inspect reason, label: "TERMINATE"
+    state
   end
 
   defp mod(x, y) when x > 0, do: rem(x, y)
