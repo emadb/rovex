@@ -2,7 +2,7 @@ defmodule Rover.Web.Router do
   use Plug.Router
 
   plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
-  plug(Plug.Static, at: "/", from: :server)
+  plug(Plug.Static, at: "/", from: "priv/static")
   plug(:match)
   plug(:dispatch)
 
