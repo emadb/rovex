@@ -161,6 +161,10 @@ defmodule Rover do
     {:noreply, new_state}
   end
 
+  def handle_info( {:EXIT, _pid, :collision}, state) do
+    {:stop, :collision, state}
+  end
+
   def terminate(reason, state) do
     IO.inspect reason, label: "TERMINATE"
     state

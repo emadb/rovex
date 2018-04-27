@@ -15,6 +15,7 @@ defmodule RoverFactory do
 
   def kill(name) do
     pid = RegistryHelper.get_pid(name)
-    DynamicSupervisor.terminate_child(__MODULE__, pid)
+    # DynamicSupervisor.terminate_child(__MODULE__, pid)
+    Process.exit(pid, :collision)
   end
 end

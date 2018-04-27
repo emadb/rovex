@@ -4,7 +4,7 @@ defmodule RegistryHelper do
   def register(name), do: Registry.register(Rover.Registry, create_key(name), [])
 
   def get_pid(name) do
-    [{pid, _}] = Registry.lookup(Rover.Registry, create_key(name))
+    [{pid, _}] = Registry.lookup(Rover.Registry, name)
     pid
   end
 end
