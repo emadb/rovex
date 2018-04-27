@@ -49,8 +49,8 @@ defmodule RoverController do
   end
 
   defp get_command do
-    commands = [:F, :B, :L, :R]
-    Enum.at(commands, Enum.random(0..3))
+    commands = [:F, :B, :L, :R, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F]
+    Enum.at(commands, Enum.random(0..Enum.count(commands)))
   end
 
   defp get_rover_name(n) do
