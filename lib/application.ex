@@ -8,7 +8,13 @@ defmodule Rover.Application do
 
     children = [
       supervisor(Registry, [:unique, Rover.Registry]),
-      Plug.Adapters.Cowboy.child_spec(:http, Rover.Web.Router, [], port: 3000, dispatch: dispatch()),
+      Plug.Adapters.Cowboy.child_spec(
+        :http,
+        Rover.Web.Router,
+        [],
+        port: 3000,
+        dispatch: dispatch()
+      ),
       %{id: @rover_factory, start: {@rover_factory, :start_link, [[]]}},
       worker(WorldMap, [@rover_factory])
     ]
@@ -20,12 +26,10 @@ defmodule Rover.Application do
   def dispatch(key, message) do
     Registry.dispatch(Rover.Registry, key, fn entries ->
       for {pid, _} <- entries do
-        IO.inspect pid
         send(pid, message)
       end
     end)
   end
-
 
   defp dispatch do
     [
@@ -36,5 +40,4 @@ defmodule Rover.Application do
        ]}
     ]
   end
-
 end

@@ -1,11 +1,10 @@
-
 defmodule Rover.Web.Router do
   use Plug.Router
 
-  plug Plug.Parsers, parsers: [:json], json_decoder: Poison
-  plug Plug.Static, at: "/", from: :server
-  plug :match
-  plug :dispatch
+  plug(Plug.Parsers, parsers: [:json], json_decoder: Poison)
+  plug(Plug.Static, at: "/", from: :server)
+  plug(:match)
+  plug(:dispatch)
 
   get "/ping" do
     send_resp(conn, 200, encode(%{message: "pong"}))
@@ -47,6 +46,4 @@ defmodule Rover.Web.Router do
   match(_) do
     send_resp(conn, 404, "")
   end
-
 end
-

@@ -4,10 +4,11 @@ use Mix.Config
 
 config :rover,
   http_port: 3000,
-  rover_factory: RoverFactory
+  rover_factory: RoverFactory,
+  world_width: 1000,
+  world_height: 1000
 
 import_config "#{Mix.env()}.exs"
-
 
 # This configuration is loaded before any dependency and is restricted
 # to this project. If another project depends on this project, this

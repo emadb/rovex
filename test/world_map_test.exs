@@ -1,7 +1,6 @@
 defmodule WorldMapTest do
   use ExUnit.Case
 
-
   test "update_rover, list is empty, cell is free, should add cell to the state list" do
     initial_state = %{rover_factory: RoverFactoryStub, rovers: []}
     {:reply, :ok, state} = WorldMap.handle_call({:update_rover, "uno", 1, 3}, {}, initial_state)
@@ -40,7 +39,11 @@ defmodule WorldMapTest do
   end
 
   test "update_rover, other rovers is alive, cell is occupied, rover is already in the list should remove rovers" do
-    initial_state = %{rover_factory: RoverFactoryStub, rovers: [%{name: "uno", x: 1, y: 3}, %{name: "tre", x: 4, y: 5}]}
+    initial_state = %{
+      rover_factory: RoverFactoryStub,
+      rovers: [%{name: "uno", x: 1, y: 3}, %{name: "tre", x: 4, y: 5}]
+    }
+
     {:reply, :ok, state} = WorldMap.handle_call({:update_rover, "due", 1, 3}, {}, initial_state)
 
     assert Enum.count(state.rovers) == 1
@@ -48,5 +51,4 @@ defmodule WorldMapTest do
 
     assert rover.name == "tre"
   end
-
 end

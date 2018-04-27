@@ -1,4 +1,6 @@
 defmodule RoverController do
+  @world_width Application.get_env(:rover, :world_width)
+  @world_height Application.get_env(:rover, :world_height)
 
   def create_rover(name, x, y, d) do
     RoverFactory.create_rover(name, x, y, d)
@@ -6,18 +8,20 @@ defmodule RoverController do
 
   def create_multiple_rovers(count) do
     dirs = [:N, :E, :S, :W]
+
     Enum.each(0..count, fn x ->
       info = {
-        Enum.random(0..10000),
-        Enum.random(0..10000),
+        Enum.random(0..@world_width),
+        Enum.random(0..@world_height),
         Enum.at(dirs, Enum.random(0..3)),
         get_rover_name(x)
       }
+
       DynamicSupervisor.start_child(RoverFactory, {Rover, info})
     end)
   end
 
-  def send_multiple_commands(rover_count, command_count\\1) do
+  def send_multiple_commands(rover_count, command_count \\ 1) do
     Enum.each(0..command_count, fn _ -> send_single_command(rover_count) end)
   end
 
@@ -52,6 +56,4 @@ defmodule RoverController do
   defp get_rover_name(n) do
     "rover_#{Integer.to_string(n)}"
   end
-
-
 end

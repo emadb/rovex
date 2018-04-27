@@ -1,8 +1,8 @@
 # Rover
 
 ## TODO
-- [ ] wrap world
+- [x] wrap world
 - [ ] refactoring rover to reduce duplication
 - [ ] reborn after death
-- [ ] refactoring world_map 
+- [x] refactoring world_map 
 - [x] hosting for static file
