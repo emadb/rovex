@@ -14,33 +14,33 @@ defmodule Rover do
 
   def init({x, y, d, name}) do
     Process.flag(:trap_exit, true)
-    {:ok, _} = RegistryHelper.register(name)
+    # {:ok, _} = RegistryHelper.register(name)
     WorldMap.update_rover(name, x, y)
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
   end
 
   def crash(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :crash)
+    GenServer.call(RegistryHelper.create_key(name), :crash)
   end
 
   def get_state(name) do
-    GenServer.call(RegistryHelper.get_pid(name), :get_state)
+    GenServer.call(RegistryHelper.create_key(name), :get_state)
   end
 
   def go_forward(name) do
-    GenServer.cast(RegistryHelper.get_pid(name), :go_forward)
+    GenServer.cast(RegistryHelper.create_key(name), :go_forward)
   end
 
   def rotate_left(name) do
-    GenServer.cast(RegistryHelper.get_pid(name), :rotate_left)
+    GenServer.cast(RegistryHelper.create_key(name), :rotate_left)
   end
 
   def go_backward(name) do
-    GenServer.cast(RegistryHelper.get_pid(name), :go_backward)
+    GenServer.cast(RegistryHelper.create_key(name), :go_backward)
   end
 
   def rotate_right(name) do
-    GenServer.cast(RegistryHelper.get_pid(name), :rotate_right)
+    GenServer.cast(RegistryHelper.create_key(name), :rotate_right)
   end
 
   def handle_call(:get_state, _from, state) do

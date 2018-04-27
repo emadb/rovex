@@ -10,14 +10,7 @@ defmodule RoverController do
     dirs = [:N, :E, :S, :W]
 
     Enum.each(0..count, fn x ->
-      info = {
-        Enum.random(0..@world_width),
-        Enum.random(0..@world_height),
-        Enum.at(dirs, Enum.random(0..3)),
-        get_rover_name(x)
-      }
-
-      DynamicSupervisor.start_child(RoverFactory, {Rover, info})
+      RoverFactory.create_rover(get_rover_name(x), Enum.random(0..@world_width), Enum.random(0..@world_height), Enum.at(dirs, Enum.random(0..3)))
     end)
   end
 
@@ -50,7 +43,7 @@ defmodule RoverController do
 
   defp get_command do
     commands = [:F, :B, :L, :R, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F]
-    Enum.at(commands, Enum.random(0..Enum.count(commands)))
+    Enum.at(commands, Enum.random(0..(Enum.count(commands) -1)))
   end
 
   defp get_rover_name(n) do
