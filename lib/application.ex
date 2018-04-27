@@ -1,7 +1,7 @@
 defmodule Rover.Application do
   use Application
 
-  @rover_factory Application.get_env(:rover, :rover_factory)
+  @rover_supervisor Application.get_env(:rover, :rover_supervisor)
 
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
@@ -15,8 +15,8 @@ defmodule Rover.Application do
         port: 3000,
         dispatch: dispatch()
       ),
-      %{id: @rover_factory, start: {@rover_factory, :start_link, [[]]}},
-      worker(WorldMap, [@rover_factory])
+      %{id: @rover_supervisor, start: {@rover_supervisor, :start_link, [[]]}},
+      worker(WorldMap, [@rover_supervisor])
     ]
 
     opts = [strategy: :one_for_one, name: Rover.Supervisor]

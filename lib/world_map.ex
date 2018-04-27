@@ -1,12 +1,12 @@
 defmodule WorldMap do
   use GenServer
 
-  def start_link(rover_factory) do
-    GenServer.start_link(__MODULE__, [rover_factory], name: WorldMap)
+  def start_link(rover_supervisor) do
+    GenServer.start_link(__MODULE__, [rover_supervisor], name: WorldMap)
   end
 
-  def init([rover_factory]) do
-    {:ok, %{rover_factory: rover_factory, rovers: []}}
+  def init([rover_supervisor]) do
+    {:ok, %{rover_supervisor: rover_supervisor, rovers: []}}
   end
 
   def update_rover(name, x, y) do
@@ -24,7 +24,7 @@ defmodule WorldMap do
       true ->
         new_rovers
         |> Enum.filter(&same_position(&1, x, y))
-        |> Enum.each(fn r -> state.rover_factory.kill(r.name) end)
+        |> Enum.each(fn r -> state.rover_supervisor.kill(r.name) end)
 
         new_rovers = Enum.reject(new_rovers, &same_position(&1, x, y))
         {:reply, :ok, %{state | rovers: new_rovers}}

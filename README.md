@@ -12,5 +12,5 @@
 - [ ] remove logic from rover server into a module of function
 - [ ] gen_statem (State machine)
 - [ ] behavior per notification (announcer)
-- [ ] rename RoverFactory
+- [x] rename RoverFactory
 - [x] brutal kill of rover so that they reborn in the start position 

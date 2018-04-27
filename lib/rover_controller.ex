@@ -3,14 +3,14 @@ defmodule RoverController do
   @world_height Application.get_env(:rover, :world_height)
 
   def create_rover(name, x, y, d) do
-    RoverFactory.create_rover(name, x, y, d)
+    RoverSupervisor.create_rover(name, x, y, d)
   end
 
   def create_multiple_rovers(count) do
     dirs = [:N, :E, :S, :W]
 
     Enum.each(0..count, fn x ->
-      RoverFactory.create_rover(get_rover_name(x), Enum.random(0..@world_width), Enum.random(0..@world_height), Enum.at(dirs, Enum.random(0..3)))
+      RoverSupervisor.create_rover(get_rover_name(x), Enum.random(0..@world_width), Enum.random(0..@world_height), Enum.at(dirs, Enum.random(0..3)))
     end)
   end
 

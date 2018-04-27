@@ -1,4 +1,4 @@
-defmodule RoverFactory do
+defmodule RoverSupervisor do
   use DynamicSupervisor
 
   def start_link(_) do
