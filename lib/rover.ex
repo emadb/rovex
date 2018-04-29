@@ -5,13 +5,17 @@ defmodule Rover do
   @world_height Application.get_env(:rover, :world_height)
 
   @type direction :: :N | :S | :E | :W
+  @type robot_name :: String.t
 
+  @type rover :: %Rover{x: integer, y: integer, direction: direction, name: robot_name}
   defstruct [:x, :y, :direction, :name]
 
+  @spec start_link({integer, integer, direction, robot_name}) :: {:ok, pid}
   def start_link({x, y, d, name}) do
     GenServer.start_link(__MODULE__, {x, y, d, name}, name: RegistryHelper.create_key(name))
   end
 
+  @spec init({integer, integer, direction, robot_name}) :: {:ok, rover}
   def init({x, y, d, name}) do
     Process.flag(:trap_exit, true)
     # {:ok, _} = RegistryHelper.register(name)
@@ -19,36 +23,33 @@ defmodule Rover do
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
   end
 
-  def crash(name) do
-    GenServer.call(RegistryHelper.create_key(name), :crash)
-  end
-
+  @spec get_state(robot_name) :: {:ok, {integer, integer, direction}}
   def get_state(name) do
     GenServer.call(RegistryHelper.create_key(name), :get_state)
   end
 
+  @spec go_forward(robot_name) :: :ok
   def go_forward(name) do
     GenServer.cast(RegistryHelper.create_key(name), :go_forward)
   end
 
+  @spec rotate_left(robot_name) :: :ok
   def rotate_left(name) do
     GenServer.cast(RegistryHelper.create_key(name), :rotate_left)
   end
 
+  @spec go_backward(robot_name) :: :ok
   def go_backward(name) do
     GenServer.cast(RegistryHelper.create_key(name), :go_backward)
   end
 
+  @spec rotate_right(robot_name) :: :ok
   def rotate_right(name) do
     GenServer.cast(RegistryHelper.create_key(name), :rotate_right)
   end
 
   def handle_call(:get_state, _from, state) do
     {:reply, {:ok, {state.x, state.y, state.direction}}, state}
-  end
-
-  def handle_call(:crash, _from, state) do
-    {:stop, "self_crash", state}
   end
 
   def handle_cast(:go_forward, state) do
@@ -166,7 +167,9 @@ defmodule Rover do
   end
 
   def terminate(reason, state) do
-    IO.inspect reason, label: "TERMINATE"
+    # Rover.Web.WsServer.send_message_to_client(%{name: state.name, status: "dead"})
+    IO.inspect state, label: "KILLING"
+    IO.inspect reason, label: "reason"
     state
   end
 

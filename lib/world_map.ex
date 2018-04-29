@@ -9,6 +9,7 @@ defmodule WorldMap do
     {:ok, %{rover_supervisor: rover_supervisor, rovers: []}}
   end
 
+  @spec update_rover(String.t, integer, integer) :: :ok
   def update_rover(name, x, y) do
     GenServer.call(__MODULE__, {:update_rover, name, x, y})
   end
@@ -19,6 +20,8 @@ defmodule WorldMap do
         nil -> state.rovers ++ [%{name: name, x: x, y: y}]
         index -> List.replace_at(state.rovers, index, %{name: name, x: x, y: y})
       end
+
+    IO.inspect name, label: "Rover name"
 
     case are_there_collisions(new_rovers, name, x, y) do
       true ->

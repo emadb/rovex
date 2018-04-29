@@ -20,8 +20,7 @@ defmodule RoverController do
 
   defp send_single_command(rover_count) do
     Enum.each(0..rover_count, fn n ->
-      command = get_command()
-      send_command(get_rover_name(n), command)
+      send_command(get_rover_name(n), get_random_command())
     end)
   end
 
@@ -41,7 +40,7 @@ defmodule RoverController do
     Rover.rotate_right(name)
   end
 
-  defp get_command do
+  defp get_random_command do
     commands = [:F, :B, :L, :R, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F]
     Enum.at(commands, Enum.random(0..(Enum.count(commands) -1)))
   end

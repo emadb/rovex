@@ -51,4 +51,18 @@ defmodule WorldMapTest do
 
     assert rover.name == "tre"
   end
+
+  test "integration test" do
+    RoverSupervisor.start_link([])
+    RoverSupervisor.create_rover("rover1", 8, 6, :N)
+    RoverSupervisor.create_rover("rover2", 8, 7, :N)
+    RoverSupervisor.create_rover("rover3", 5, 6, :S)
+
+    Rover.go_forward("rover1")
+
+    {:ok, s1} = Rover.get_state("rover3")
+    assert s1.x == 5
+    assert s1.y == 6
+
+  end
 end
