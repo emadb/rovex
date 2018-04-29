@@ -9,7 +9,7 @@ defmodule RoverSupervisorStub do
     {:ok, args}
   end
 
-  def kill(_name) do
-    IO.inspect _name, label: "killing"
+  def kill(name) do
+    IO.puts "killing #{name}"
   end
 end
