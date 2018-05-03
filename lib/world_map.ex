@@ -26,10 +26,10 @@ defmodule WorldMap do
     case are_there_collisions(new_rovers, name, x, y) do
       true ->
         new_rovers
-        |> Enum.filter(&same_position(&1, x, y))
-        |> Enum.each(fn r -> state.rover_supervisor.kill(r.name) end)
+        |> Enum.find(&same_position(&1, name, x, y))
+        |> state.rover_supervisor.kill
 
-        new_rovers = Enum.reject(new_rovers, &same_position(&1, x, y))
+        new_rovers = Enum.reject(new_rovers, &same_position(&1, name, x, y))
         {:reply, :ok, %{state | rovers: new_rovers}}
 
       false ->
@@ -37,8 +37,8 @@ defmodule WorldMap do
     end
   end
 
-  defp same_position(r, x, y) do
-    r.x == x && r.y == y
+  defp same_position(r, name, x, y) do
+    r.name != name && r.x == x && r.y == y
   end
 
   defp are_there_collisions(rovers, name, x, y) do
