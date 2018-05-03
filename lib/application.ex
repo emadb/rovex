@@ -2,6 +2,7 @@ defmodule Rover.Application do
   use Application
 
   @rover_supervisor Application.get_env(:rover, :rover_supervisor)
+  @http_port Application.get_env(:rover, :http_port)
 
   def start(_type, _args) do
     import Supervisor.Spec, warn: false
@@ -12,7 +13,7 @@ defmodule Rover.Application do
         :http,
         Rover.Web.Router,
         [],
-        port: 3000,
+        port: @http_port,
         dispatch: dispatch()
       ),
       %{id: @rover_supervisor, start: {@rover_supervisor, :start_link, [[]]}},
