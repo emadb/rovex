@@ -13,7 +13,7 @@ defmodule Rover.Application do
         :http,
         Rover.Web.Router,
         [],
-        port: @http_port,
+        port: String.to_integer(System.get_env("PORT")),
         dispatch: dispatch()
       ),
       %{id: @rover_supervisor, start: {@rover_supervisor, :start_link, [[]]}},
