@@ -14,3 +14,4 @@
 - [ ] behavior per notification (announcer)
 - [x] rename RoverFactory
 - [x] brutal kill of rover so that they reborn in the start position 
+- [ ] transform this in a multi player game 
