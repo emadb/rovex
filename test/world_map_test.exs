@@ -35,7 +35,7 @@ defmodule WorldMapTest do
     initial_state = %{rover_supervisor: RoverSupervisorStub, rovers: [%{name: "uno", x: 1, y: 3}]}
     {:reply, :ok, state} = WorldMap.handle_call({:update_rover, "due", 1, 3}, {}, initial_state)
 
-    assert Enum.count(state.rovers) == 0
+    assert Enum.count(state.rovers) == 1
   end
 
   test "update_rover, other rovers is alive, cell is occupied, rover is already in the list should remove rovers" do
@@ -46,10 +46,7 @@ defmodule WorldMapTest do
 
     {:reply, :ok, state} = WorldMap.handle_call({:update_rover, "due", 1, 3}, {}, initial_state)
 
-    assert Enum.count(state.rovers) == 1
-    rover = Enum.at(state.rovers, 0)
-
-    assert rover.name == "tre"
+    assert Enum.count(state.rovers) == 2
   end
 
   test "integration test" do
@@ -58,11 +55,9 @@ defmodule WorldMapTest do
     RoverSupervisor.create_rover("rover2", 8, 7, :N)
     RoverSupervisor.create_rover("rover3", 5, 6, :S)
 
-    Rover.go_forward("rover1")
-
-    {:ok, s1} = Rover.get_state("rover3")
-    assert s1.x == 5
-    assert s1.y == 6
+    {:ok, {x, y, _d}} = Rover.get_state("rover3")
+    assert x == 5
+    assert y == 6
 
   end
 end

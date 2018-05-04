@@ -21,8 +21,6 @@ defmodule WorldMap do
         index -> List.replace_at(state.rovers, index, %{name: name, x: x, y: y})
       end
 
-    IO.inspect name, label: "Rover name"
-
     case are_there_collisions(new_rovers, name, x, y) do
       true ->
         new_rovers
