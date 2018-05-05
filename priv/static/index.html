@@ -19,19 +19,18 @@
 
     .mars{
       height: 100%;
-      background: url('https://get.pxhere.com/photo/sand-wood-texture-floor-orange-pattern-red-desktop-brown-soil-yellow-material-circle-surface-hardwood-wallpaper-wallpapers-plaster-fill-the-background-invoice-flooring-finish-the-structure-of-the-padding-wood-flooring-the-decor-porosity-laminate-flooring-wood-stain-nakrapianka-746935.jpg') repeat center center;
+      background: url('mars-bg.jpg') repeat center center;
       background-size: cover;
       position: relative;
     }
 
     .rover{
-      width: 10px;
-      height: 10px;
-      background-color: black;
-      position: absolute;
-      top: 0;
-      left: 0;
-      transition: all 0.5s ease;
+      width: 60px;
+      height: 55px;
+      background-image: url(rover.svg);
+      background-repeat: no-repeat;
+      background-size: cover;
+      /*transition: transform 0.5s ease;*/
     }
   </style>
 </head>
@@ -42,8 +41,8 @@
     const connection = new WebSocket('ws://localhost:3000/ws')
     const rovers = [];
 
-    const maxWidth = 100;
-    const maxHeight = 100;
+    const maxWidth = 1000;
+    const maxHeight = 1000;
 
     const createRover = (name) => {
       const rover = document.createElement('div');
@@ -53,27 +52,55 @@
       rovers.push(name);
     } 
 
-    const moveRover = (name, x, y) => {
-      const id = `rover-${name}`
+    const moveRover = (x, y) => {
       const top = y * 100 / maxHeight;
       const left = x * 100 / maxWidth;
-      document.getElementById(id).style.setProperty('left', `${left}%`)
-      document.getElementById(id).style.setProperty('top', `${top}%`)
+      return `translate(${left}vw, ${top}vh)`;
     }
+
+    const rotateRover = (direction) => {
+      let transform = ''
+      switch(direction){
+        case 'S':
+          transform = 'rotate(270deg)'
+          break;
+        case 'N':
+          transform = 'rotate(90deg)';
+          break;
+        case 'E':
+          transform = 'rotate(0deg)';
+          break;
+        default:
+          transform = 'rotate(180deg)';
+      }
+      return transform;
+    }
+
+    const animateRover = (name, x, y, direction) => {
+      const movement = moveRover(x, y);
+      const rotation = rotateRover(direction);
+      const id = `rover-${name}`
+      const rover = document.getElementById(id)
+      console.log(movement, rotation);
+      rover.style.setProperty('transform', `${movement} ${rotation}`);
+    }
+
     connection.onopen = () => {
       console.log('connection ready')
       //  heartBeat = setInterval(() => connection.send('ping'), 5000)
     }
+
     connection.onerror = (err) => {
       console.log('websocket error', err)
     }
+
     connection.onmessage = (evt) => {
       data = JSON.parse(evt.data);
-      const {name, x, y} = data;
+      const {name, x, y, direction} = data;
       if (!rovers.includes(name)){
         createRover(name)
       }
-      moveRover(name, x, y)
+      animateRover(name, x, y, direction)
     }
 
   </script>

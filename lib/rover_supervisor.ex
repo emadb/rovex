@@ -1,4 +1,4 @@
-defmodule RoverFactory do
+defmodule RoverSupervisor do
   use DynamicSupervisor
 
   def start_link(_) do
@@ -15,6 +15,8 @@ defmodule RoverFactory do
 
   def kill(name) do
     pid = RegistryHelper.get_pid(name)
-    DynamicSupervisor.terminate_child(__MODULE__, pid)
+    # DynamicSupervisor.terminate_child(__MODULE__, pid)
+    IO.inspect name, label: "SUP"
+    Process.exit(pid, :collision)
   end
 end
