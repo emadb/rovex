@@ -4,112 +4,32 @@
 <head>
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Rover Controller</title>
-  <link rel="shortcut icon" href="https://cdn4.iconfinder.com/data/icons/space-28/24/Mars-Rover-256.png" />
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    *{
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body{
-      height: 100%;
-    }
-
-    .mars{
-      height: 100%;
-      background: url('mars-bg.jpg') repeat center center;
-      background-size: cover;
-      position: relative;
-    }
-
-    .rover{
-      width: 60px;
-      height: 55px;
-      background-image: url(rover.svg);
-      background-repeat: no-repeat;
-      background-size: cover;
-      /*transition: transform 0.5s ease;*/
-    }
-  </style>
+  <title>Rover Controller</title>
+  <link rel="shortcut icon" href="favicon.ico" />
+  <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <div class="mars"></div>
-  <script>
-    const connection = new WebSocket('ws://localhost:3000/ws')
-    const rovers = [];
-
-    const maxWidth = 1000;
-    const maxHeight = 1000;
-
-    const createRover = (name) => {
-      const rover = document.createElement('div');
-      rover.classList.add('rover')
-      rover.id = `rover-${name}`;
-      document.getElementsByClassName('mars')[0].appendChild(rover);
-      rovers.push(name);
-    } 
-
-    const moveRover = (x, y) => {
-      const top = y * 100 / maxHeight;
-      const left = x * 100 / maxWidth;
-      return `translate(${left}vw, ${top}vh)`;
-    }
-
-    const rotateRover = (direction) => {
-      let transform = ''
-      switch(direction){
-        case 'S':
-          transform = 'rotate(270deg)'
-          break;
-        case 'N':
-          transform = 'rotate(90deg)';
-          break;
-        case 'E':
-          transform = 'rotate(0deg)';
-          break;
-        default:
-          transform = 'rotate(180deg)';
-      }
-      return transform;
-    }
-
-    const animateRover = (name, x, y, direction) => {
-      const movement = moveRover(x, y);
-      const rotation = rotateRover(direction);
-      const id = `rover-${name}`
-      const rover = document.getElementById(id)
-      console.log(movement, rotation);
-      rover.style.setProperty('transform', `${movement} ${rotation}`);
-    }
-
-    connection.onopen = () => {
-      console.log('connection ready')
-      //  heartBeat = setInterval(() => connection.send('ping'), 5000)
-    }
-
-    connection.onerror = (err) => {
-      console.log('websocket error', err)
-    }
-
-    connection.onmessage = (evt) => {
-      data = JSON.parse(evt.data);
-      const {name, x, y, direction} = data;
-      if (!rovers.includes(name)){
-        createRover(name)
-      }
-      animateRover(name, x, y, direction)
-    }
-
-    function sendMessage() {
-      connection.send(JSON.stringify({n: "rover_1", c: "F"}))
-    }
-
-  </script>
-
-<button onclick="sendMessage()">Send</button>
+  <div class="container">
+    <div class="mars"></div>
+    <div class="controls">
+      <h1>Rover Controller</h1>
+      <form id="control-form">
+        <div class="form-item">
+          <label for="name">Name</label>
+          <input type="text" name="name" id="name" required />
+        </div>
+        <button type="submit" id="submit">Crea</button>
+      </form>
+      <div class="credits">Icons made by 
+        <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev" target="_blank">Vitaly Gorbachev</a> 
+        from <a href="https://www.flaticon.com/" title="Flaticon"  target="_blank">www.flaticon.com</a> 
+        is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+      </div>
+    </div>
+  </div>
+  <script type='text/javascript' src='rovex.js'></script>
 </body>
-
 </html>
