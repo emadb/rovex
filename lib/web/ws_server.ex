@@ -23,11 +23,14 @@ defmodule Rover.Web.WsServer do
     {:reply, {:text, "pong"}, req, state}
   end
 
-  def websocket_handle({:text, _message}, req, state) do
+  def websocket_handle({:text, message}, req, state) do
+    %{"n" => name, "c" => command} = Poison.decode!(message)
+    RoverController.send_command(name, String.to_atom(command))
     {:ok, req, state}
   end
 
   def websocket_info(message, req, state) do
+    IO.inspect message, label: "MESSAGE2"
     msg = Poison.encode!(message)
     {:reply, {:text, msg}, req, state}
   end

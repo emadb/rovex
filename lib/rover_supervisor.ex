@@ -13,10 +13,9 @@ defmodule RoverSupervisor do
     DynamicSupervisor.start_child(__MODULE__, {Rover, {x, y, direction, name}})
   end
 
-  def kill(name) do
-    pid = RegistryHelper.get_pid(name)
-    # DynamicSupervisor.terminate_child(__MODULE__, pid)
-    IO.inspect name, label: "SUP"
-    Process.exit(pid, :collision)
+  def kill(rover) do
+    pid = RegistryHelper.get_pid(rover.name)
+    DynamicSupervisor.terminate_child(__MODULE__, pid)
+    # Process.exit(pid, :collision)
   end
 end

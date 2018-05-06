@@ -18,8 +18,8 @@ defmodule Rover do
   @spec init({integer, integer, direction, robot_name}) :: {:ok, rover}
   def init({x, y, d, name}) do
     Process.flag(:trap_exit, true)
-    # {:ok, _} = RegistryHelper.register(name)
     WorldMap.update_rover(name, x, y)
+    Rover.Web.WsServer.send_message_to_client(%{name: name, status: "born"})
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
   end
 
@@ -166,10 +166,8 @@ defmodule Rover do
     {:stop, :collision, state}
   end
 
-  def terminate(reason, state) do
-    # Rover.Web.WsServer.send_message_to_client(%{name: state.name, status: "dead"})
-    IO.inspect state, label: "KILLING"
-    IO.inspect reason, label: "reason"
+  def terminate(_reason, state) do
+    Rover.Web.WsServer.send_message_to_client(%{name: state.name, status: "dead"})
     state
   end
 

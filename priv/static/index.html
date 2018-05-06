@@ -103,8 +103,13 @@
       animateRover(name, x, y, direction)
     }
 
+    function sendMessage() {
+      connection.send(JSON.stringify({n: "rover_1", c: "F"}))
+    }
+
   </script>
 
+<button onclick="sendMessage()">Send</button>
 </body>
 
 </html>

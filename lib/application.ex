@@ -12,7 +12,7 @@ defmodule Rover.Application do
         :http,
         Rover.Web.Router,
         [],
-        port: 3000,
+        port: Settings.get_port(),
         dispatch: dispatch()
       ),
       %{id: @rover_supervisor, start: {@rover_supervisor, :start_link, [[]]}},
