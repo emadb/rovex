@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
       name: name,
       x: 0,
       y: 0,
-      d: 'L'
+      d: 'N'
     }));
   }
 
