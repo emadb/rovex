@@ -4,7 +4,7 @@ defmodule Rover.Web.WsServer do
   @registration_key "ws_server"
 
   def send_message_to_client(rover, message) do
-    Rover.Application.dispatch("#{@registration_key}#{rover}", message)
+    Rover.Application.dispatch("#{@registration_key}_#{rover}", message)
   end
 
   def init(_, _req, _opts) do
@@ -12,7 +12,6 @@ defmodule Rover.Web.WsServer do
   end
 
   def websocket_init(_type, req, _opts) do
-    IO.inspect req
     {rover, _} = :cowboy_req.qs_val(<<"rover">>, req)
     {:ok, _} = Registry.register(Rover.Registry, "#{@registration_key}_#{rover}", [])
     state = %{}
@@ -31,7 +30,6 @@ defmodule Rover.Web.WsServer do
   end
 
   def websocket_info(message, req, state) do
-    IO.inspect message, label: "MESSAGE2"
     msg = Poison.encode!(message)
     {:reply, {:text, msg}, req, state}
   end
