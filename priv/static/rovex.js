@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => { 
 
   const connection = new WebSocket('ws://localhost:3000/ws')
-  const rovers = [];
+  let rovers = [];
 
   const maxWidth = 1000;
   const maxHeight = 1000;
 
-  const rover = null;
+  let rover = null;
 
   const form = document.getElementById('control-form');
   const submit = document.getElementById('submit');
@@ -20,29 +20,47 @@ document.addEventListener('DOMContentLoaded', () => {
     const roverName = nameInput.value;
     if (roverName){
       nameInput.readOnly = true;
-      createRover(roverName, true);
+      rover = roverName;
+      createRover(roverName);
       listenToKeyPress();
     } else {
       submit.style.display = 'block';
     }
   });
 
+
   const listenToKeyPress = () => {
     document.addEventListener('keydown', (e) => {
       if (e.keyCode == '38') {
-        console.log('up');
+        connection.send(JSON.stringify({ n: rover, c: 'F' }))
       } else if (e.keyCode == '40') {
-        console.log('down')
+        connection.send(JSON.stringify({ n: rover, c: 'B' }))
       } else if (e.keyCode == '37') {
-        console.log('left');
+        connection.send(JSON.stringify({ n: rover, c: 'L' }))
       } else if (e.keyCode == '39') {
-       console.log('right');
+        connection.send(JSON.stringify({ n: rover, c: 'R' }))
       }
     })
   }
 
+  const createRover = (name) => {
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', '/rover');
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+          console.log(JSON.parse(xhr.responseText));
+      }
+    };
+    xhr.send(JSON.stringify({
+      name: name,
+      x: 0,
+      y: 0,
+      d: 'L'
+    }));
+  }
 
-  const createRover = (name, mine = false) => {
+  const createDOMRover = (name, mine = false) => {
     const rover = document.createElement('div');
     rover.classList.add('rover')
     if (mine) {
@@ -53,7 +71,13 @@ document.addEventListener('DOMContentLoaded', () => {
     rovers.push(name);
   }
 
-  createRover('1');
+  const deleteDOMRover = (name) => {
+    const id = `rover-${name}`;
+    const rover = document.getElementById(id);
+    if(rover){
+      rover.remove();
+    }
+  }
 
   const moveRover = (x, y) => {
     const top = y * 100 / maxHeight;
@@ -99,11 +123,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
   connection.onmessage = (evt) => {
     data = JSON.parse(evt.data);
-    const { name, x, y, direction } = data;
+    const { status, name } = data;
+    switch (status) {
+      case 'born':
+        createDOMRover(name, name === rover);
+        break;
+      case 'dead':
+        deleteDOMRover(name);
+      default:
+        console.log(data);
+    }
+    /*const { name, x, y, direction } = data;
     if (!rovers.includes(name)) {
       createRover(name)
     }
-    animateRover(name, x, y, direction)
+    animateRover(name, x, y, direction)*/
   }
 
   function sendMessage() {
