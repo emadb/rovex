@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => { 
 
-  const connection = new WebSocket('ws://localhost:3000/ws')
+  let connection = null;
   let rovers = [];
 
   const maxWidth = 1000;
@@ -21,12 +21,46 @@ document.addEventListener('DOMContentLoaded', () => {
     if (roverName){
       nameInput.readOnly = true;
       rover = roverName;
-      createRover(roverName);
-      listenToKeyPress();
+      connection = new WebSocket(`ws://localhost:3000/ws?rover=${rover}`)
+      initializeWebSocket();
     } else {
       submit.style.display = 'block';
     }
   });
+
+
+  const initializeWebSocket = () => {
+    connection.onopen = () => {
+      console.log('connection ready');
+      createRover(rover);
+      listenToKeyPress();
+    }
+
+    connection.onerror = (err) => {
+      console.log('websocket error', err)
+    }
+  
+    connection.onmessage = (evt) => {
+      data = JSON.parse(evt.data);
+      const { status, name } = data;
+      switch (status) {
+        case 'born':
+          createDOMRover(name, name === rover);
+          break;
+        case 'dead':
+          deleteDOMRover(name);
+        default:
+          console.log(data);
+      }
+      /*const { name, x, y, direction } = data;
+      if (!rovers.includes(name)) {
+        createRover(name)
+      }
+      animateRover(name, x, y, direction)*/
+    }
+  } 
+
+  
 
 
   const listenToKeyPress = () => {
@@ -110,34 +144,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const rover = document.getElementById(id)
     console.log(movement, rotation);
     rover.style.setProperty('transform', `${movement} ${rotation}`);
-  }
-
-  connection.onopen = () => {
-    console.log('connection ready')
-    //  heartBeat = setInterval(() => connection.send('ping'), 5000)
-  }
-
-  connection.onerror = (err) => {
-    console.log('websocket error', err)
-  }
-
-  connection.onmessage = (evt) => {
-    data = JSON.parse(evt.data);
-    const { status, name } = data;
-    switch (status) {
-      case 'born':
-        createDOMRover(name, name === rover);
-        break;
-      case 'dead':
-        deleteDOMRover(name);
-      default:
-        console.log(data);
-    }
-    /*const { name, x, y, direction } = data;
-    if (!rovers.includes(name)) {
-      createRover(name)
-    }
-    animateRover(name, x, y, direction)*/
   }
 
   function sendMessage() {
