@@ -7,7 +7,9 @@ defmodule Rover.Application do
     import Supervisor.Spec, warn: false
 
     children = [
-      supervisor(Registry, [:unique, Rover.Registry]),
+      Supervisor.child_spec({Registry, [keys: :unique, name: Rover.Registry]}, id: :rover_registry),
+      Supervisor.child_spec({Registry, [keys: :duplicate, name: Socket.Registry]}, id: :socket_registry),
+
       Plug.Adapters.Cowboy.child_spec(
         :http,
         Rover.Web.Router,
@@ -24,7 +26,7 @@ defmodule Rover.Application do
   end
 
   def dispatch(key, message) do
-    Registry.dispatch(Rover.Registry, key, fn entries ->
+    Registry.dispatch(Socket.Registry, key, fn entries ->
       for {pid, _} <- entries do
         send(pid, message)
       end
