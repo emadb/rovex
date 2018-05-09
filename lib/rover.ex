@@ -19,7 +19,7 @@ defmodule Rover do
   def init({x, y, d, name}) do
     Process.flag(:trap_exit, true)
     WorldMap.update_rover(name, x, y)
-    Rover.Web.WsServer.send_message_to_client(name, %{name: name, status: "born"})
+    Rover.Web.WsServer.send_message_to_client(name, %{name: name, status: "born", x: x, y: y, direction: d})
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
   end
 
