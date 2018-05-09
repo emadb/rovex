@@ -3,8 +3,8 @@ defmodule Rover.Web.WsServer do
   @timeout 5 * 60000
   @registration_key "ws_server"
 
-  def send_message_to_client(message) do
-    Rover.Application.dispatch(@registration_key, message)
+  def send_message_to_client(rover, message) do
+    Rover.Application.dispatch("#{@registration_key}#{rover}", message)
   end
 
   def init(_, _req, _opts) do
@@ -12,8 +12,9 @@ defmodule Rover.Web.WsServer do
   end
 
   def websocket_init(_type, req, _opts) do
-    # {:ok, _} = RegistryHelper.register(@registration_key)
-    {:ok, _} = Registry.register(Rover.Registry, @registration_key, [])
+    IO.inspect req
+    {rover, _} = :cowboy_req.qs_val(<<"rover">>, req)
+    {:ok, _} = Registry.register(Rover.Registry, "#{@registration_key}_#{rover}", [])
     state = %{}
     {:ok, req, state, @timeout}
   end
