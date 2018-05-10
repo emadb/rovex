@@ -3,16 +3,11 @@ document.addEventListener('DOMContentLoaded', () => {
   let connection = null;
   let rovers = [];
 
-  const maxWidth = 1000;
-  const maxHeight = 1000;
-
   let rover = null;
 
   const form = document.getElementById('control-form');
   const submit = document.getElementById('submit');
   const nameInput = document.getElementById('name');
-
-  
 
   form.addEventListener('submit', (event) =>{
     event.preventDefault();
@@ -42,21 +37,22 @@ document.addEventListener('DOMContentLoaded', () => {
   
     connection.onmessage = (evt) => {
       data = JSON.parse(evt.data);
-      const { status, name } = data;
+      const { status, name, x, y, direction } = data;
       switch (status) {
         case 'born':
+          rovers.push(name);
           createDOMRover(name, name === rover);
+          animateRover(name, x, y, direction);
           break;
         case 'dead':
           deleteDOMRover(name);
         default:
-          console.log(data);
+          if (!rovers.includes(name)) {
+            rovers.push(name);
+            createDOMRover(name, name === rover);
+          }
+          animateRover(name, x, y, direction);
       }
-      /*const { name, x, y, direction } = data;
-      if (!rovers.includes(name)) {
-        createRover(name)
-      }
-      animateRover(name, x, y, direction)*/
     }
   } 
 
@@ -86,10 +82,12 @@ document.addEventListener('DOMContentLoaded', () => {
           console.log(JSON.parse(xhr.responseText));
       }
     };
+    x = Math.floor(Math.random() * 50)  
+    y = Math.floor(Math.random() * 50)  
     xhr.send(JSON.stringify({
       name: name,
-      x: 0,
-      y: 0,
+      x,
+      y,
       d: 'N'
     }));
   }
@@ -114,25 +112,26 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const moveRover = (x, y) => {
-    const top = y * 100 / maxHeight;
-    const left = x * 100 / maxWidth;
-    return `translate(${left}vw, ${top}vh)`;
+    const reverseTop = (50 - y) * 20;
+    const top = reverseTop === 1000 ? 0 : reverseTop;
+    const left = x * 20;
+    return `translate(${left}px, ${top}px)`;
   }
 
   const rotateRover = (direction) => {
     let transform = ''
     switch (direction) {
       case 'S':
-        transform = 'rotate(270deg)'
+        transform = 'rotate(180deg)'
         break;
       case 'N':
-        transform = 'rotate(90deg)';
-        break;
-      case 'E':
         transform = 'rotate(0deg)';
         break;
+      case 'E':
+        transform = 'rotate(90deg)';
+        break;
       default:
-        transform = 'rotate(180deg)';
+        transform = 'rotate(270deg)';
     }
     return transform;
   }
@@ -142,12 +141,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const rotation = rotateRover(direction);
     const id = `rover-${name}`
     const rover = document.getElementById(id)
-    console.log(movement, rotation);
     rover.style.setProperty('transform', `${movement} ${rotation}`);
   }
 
-  function sendMessage() {
-    console.log('Qui');
-    connection.send(JSON.stringify({ n: "rover_1", c: "F" }))
-  }
 });
