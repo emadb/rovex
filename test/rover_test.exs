@@ -5,14 +5,14 @@ defmodule RoverTest do
   test "get_state should return current state" do
     {:ok, _} = Rover.start_link({1, 3, :N, "rover1"})
     {:ok, state} = Rover.get_state("rover1")
-    assert state == {1, 3, :N}
+    assert state == {1, 3, :N, 0}
   end
 
   test "handle_call :get_state should return current state" do
     {:reply, {:ok, res}, _state} =
-      Rover.handle_call(:get_state, [], %Rover{x: 1, y: 3, direction: :N})
+      Rover.handle_call(:get_state, [], %Rover{x: 1, y: 3, direction: :N, score: 5})
 
-    assert res == {1, 3, :N}
+    assert res == {1, 3, :N, 5}
   end
 
   test "handle_cast :go_forward should return updated state" do
@@ -99,5 +99,11 @@ defmodule RoverTest do
       assert state.y == 2
       assert state.direction == :W
     end
+
+    test "handle_cast :update_score should add 1" do
+      {:noreply, state} = Rover.handle_cast(:update_score, %Rover{x: 9, y: 2, direction: :W, score: 7})
+      assert state.score == 8
+    end
+
   end
 end

@@ -4,7 +4,6 @@ defmodule Rover.Web.WsServer do
   @registration_key "ws_server"
 
   def send_message_to_client(_rover, message) do
-    IO.inspect message, label: "send"
     Rover.Application.dispatch("#{@registration_key}", message)
   end
 
@@ -13,7 +12,6 @@ defmodule Rover.Web.WsServer do
   end
 
   def websocket_init(_type, req, _opts) do
-    IO.inspect req, label: "init"
     #{rover, _} = :cowboy_req.qs_val(<<"rover">>, req)
     {:ok, _} = Registry.register(Socket.Registry, "#{@registration_key}", [])
     state = %{}

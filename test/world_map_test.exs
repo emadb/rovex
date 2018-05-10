@@ -55,7 +55,7 @@ defmodule WorldMapTest do
     RoverSupervisor.create_rover("rover2", 8, 7, :N)
     RoverSupervisor.create_rover("rover3", 5, 6, :S)
 
-    {:ok, {x, y, _d}} = Rover.get_state("rover3")
+    {:ok, {x, y, _d, _s}} = Rover.get_state("rover3")
     assert x == 5
     assert y == 6
 

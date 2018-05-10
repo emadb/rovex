@@ -7,8 +7,8 @@ defmodule Rover do
   @type direction :: :N | :S | :E | :W
   @type robot_name :: String.t
 
-  @type rover :: %Rover{x: integer, y: integer, direction: direction, name: robot_name}
-  defstruct [:x, :y, :direction, :name]
+  @type rover :: %Rover{x: integer, y: integer, direction: direction, name: robot_name, score: integer}
+  defstruct [:x, :y, :direction, :name, :score]
 
   @spec start_link({integer, integer, direction, robot_name}) :: {:ok, pid}
   def start_link({x, y, d, name}) do
@@ -20,7 +20,7 @@ defmodule Rover do
     Process.flag(:trap_exit, true)
     WorldMap.update_rover(name, x, y)
     Rover.Web.WsServer.send_message_to_client(name, %{name: name, status: "born", x: x, y: y, direction: d})
-    {:ok, %Rover{x: x, y: y, direction: d, name: name}}
+    {:ok, %Rover{x: x, y: y, direction: d, name: name, score: 0}}
   end
 
   @spec get_state(robot_name) :: {:ok, {integer, integer, direction}}
@@ -48,8 +48,15 @@ defmodule Rover do
     GenServer.cast(RegistryHelper.create_key(name), :rotate_right)
   end
 
+  @spec update_score(robot_name) :: :ok
+  def update_score(name) do
+    GenServer.cast(RegistryHelper.create_key(name), :update_score)
+  end
+
+
+
   def handle_call(:get_state, _from, state) do
-    {:reply, {:ok, {state.x, state.y, state.direction}}, state}
+    {:reply, {:ok, {state.x, state.y, state.direction, state.score}}, state}
   end
 
   def handle_cast(:go_forward, state) do
@@ -57,34 +64,30 @@ defmodule Rover do
       case state.direction do
         :N ->
           %Rover{
+            state |
             x: state.x,
-            y: mod(state.y + 1, @world_height),
-            direction: state.direction,
-            name: state.name
+            y: mod(state.y + 1, @world_height)
           }
 
         :S ->
           %Rover{
+            state |
             x: state.x,
-            y: mod(state.y - 1, @world_height),
-            direction: state.direction,
-            name: state.name
+            y: mod(state.y - 1, @world_height)
           }
 
         :E ->
           %Rover{
+            state |
             x: mod(state.x + 1, @world_width),
-            y: state.y,
-            direction: state.direction,
-            name: state.name
+            y: state.y
           }
 
         :W ->
           %Rover{
+            state |
             x: mod(state.x - 1, @world_width),
-            y: state.y,
-            direction: state.direction,
-            name: state.name
+            y: state.y
           }
       end
 
@@ -98,34 +101,30 @@ defmodule Rover do
       case state.direction do
         :N ->
           %Rover{
+            state |
             x: state.x,
-            y: mod(state.y - 1, @world_height),
-            direction: state.direction,
-            name: state.name
+            y: mod(state.y - 1, @world_height)
           }
 
         :S ->
           %Rover{
+            state |
             x: state.x,
-            y: mod(state.y + 1, @world_height),
-            direction: state.direction,
-            name: state.name
+            y: mod(state.y + 1, @world_height)
           }
 
         :E ->
           %Rover{
+            state |
             x: mod(state.x - 1, @world_width),
-            y: state.y,
-            direction: state.direction,
-            name: state.name
+            y: state.y
           }
 
         :W ->
           %Rover{
+            state |
             x: mod(state.x + 1, @world_width),
-            y: state.y,
-            direction: state.direction,
-            name: state.name
+            y: state.y
           }
       end
 
@@ -137,10 +136,10 @@ defmodule Rover do
   def handle_cast(:rotate_right, state) do
     new_state =
       case state.direction do
-        :N -> %Rover{x: state.x, y: state.y, direction: :E, name: state.name}
-        :S -> %Rover{x: state.x, y: state.y, direction: :W, name: state.name}
-        :E -> %Rover{x: state.x, y: state.y, direction: :S, name: state.name}
-        :W -> %Rover{x: state.x, y: state.y, direction: :N, name: state.name}
+        :N -> %Rover{state | x: state.x, y: state.y, direction: :E}
+        :S -> %Rover{state | x: state.x, y: state.y, direction: :W}
+        :E -> %Rover{state | x: state.x, y: state.y, direction: :S}
+        :W -> %Rover{state | x: state.x, y: state.y, direction: :N}
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
@@ -151,15 +150,20 @@ defmodule Rover do
   def handle_cast(:rotate_left, state) do
     new_state =
       case state.direction do
-        :N -> %Rover{x: state.x, y: state.y, direction: :W, name: state.name}
-        :S -> %Rover{x: state.x, y: state.y, direction: :E, name: state.name}
-        :E -> %Rover{x: state.x, y: state.y, direction: :N, name: state.name}
-        :W -> %Rover{x: state.x, y: state.y, direction: :S, name: state.name}
+        :N -> %Rover{state | x: state.x, y: state.y, direction: :W}
+        :S -> %Rover{state | x: state.x, y: state.y, direction: :E}
+        :E -> %Rover{state | x: state.x, y: state.y, direction: :N}
+        :W -> %Rover{state | x: state.x, y: state.y, direction: :S}
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
     Rover.Web.WsServer.send_message_to_client(state.name, new_state)
     {:noreply, new_state}
+  end
+
+  def handle_cast(:update_score, state) do
+    Rover.Web.WsServer.send_message_to_client(state.name, %{name: state.name, status: "update_score", score: state.score + 1})
+    {:noreply, %Rover{state | score: state.score + 1}}
   end
 
   def handle_info( {:EXIT, _pid, :collision}, state) do

@@ -27,6 +27,7 @@ defmodule WorldMap do
         |> Enum.find(&same_position(&1, name, x, y))
         |> state.rover_supervisor.kill
 
+        Rover.update_score(name)
         new_rovers = Enum.reject(new_rovers, &same_position(&1, name, x, y))
         {:reply, :ok, %{state | rovers: new_rovers}}
 

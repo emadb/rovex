@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (roverName){
       nameInput.readOnly = true;
       rover = roverName;
-      connection = new WebSocket(`wss://${window.location.host}/ws?rover=${rover}`)
+      connection = new WebSocket(`ws://${window.location.host}/ws?rover=${rover}`)
       initializeWebSocket();
     } else {
       submit.style.display = 'block';
