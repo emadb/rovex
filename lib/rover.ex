@@ -19,7 +19,7 @@ defmodule Rover do
   def init({x, y, d, name}) do
     Process.flag(:trap_exit, true)
     WorldMap.update_rover(name, x, y)
-    Rover.Web.WsServer.send_message_to_client(%{name: name, status: "born"})
+    Rover.Web.WsServer.send_message_to_client(name, %{name: name, status: "born", x: x, y: y, direction: d})
     {:ok, %Rover{x: x, y: y, direction: d, name: name}}
   end
 
@@ -89,7 +89,7 @@ defmodule Rover do
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(new_state)
+    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
     {:noreply, new_state}
   end
 
@@ -130,7 +130,7 @@ defmodule Rover do
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(new_state)
+    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
     {:noreply, new_state}
   end
 
@@ -144,7 +144,7 @@ defmodule Rover do
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(new_state)
+    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
     {:noreply, new_state}
   end
 
@@ -158,7 +158,7 @@ defmodule Rover do
       end
 
     WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(new_state)
+    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
     {:noreply, new_state}
   end
 
@@ -167,7 +167,7 @@ defmodule Rover do
   end
 
   def terminate(_reason, state) do
-    Rover.Web.WsServer.send_message_to_client(%{name: state.name, status: "dead"})
+    Rover.Web.WsServer.send_message_to_client(state.name, %{name: state.name, status: "dead"})
     state
   end
 
