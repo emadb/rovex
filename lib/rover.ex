@@ -80,8 +80,7 @@ defmodule Rover do
       :W -> %Rover{ state | x: mod(state.x - 1, @world_width), y: state.y }
     end
 
-    WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
+    notify(new_state)
     {:noreply, new_state}
   end
 
@@ -93,8 +92,7 @@ defmodule Rover do
       :W -> %Rover{ state | x: mod(state.x + 1, @world_width), y: state.y }
     end
 
-    WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
+    notify(new_state)
     {:noreply, new_state}
   end
 
@@ -107,8 +105,7 @@ defmodule Rover do
         :W -> %Rover{state | x: state.x, y: state.y, direction: :N}
       end
 
-    WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
+    notify(new_state)
     {:noreply, new_state}
   end
 
@@ -121,8 +118,7 @@ defmodule Rover do
         :W -> %Rover{state | x: state.x, y: state.y, direction: :S}
       end
 
-    WorldMap.update_rover(state.name, new_state.x, new_state.y)
-    Rover.Web.WsServer.send_message_to_client(state.name, new_state)
+    notify(new_state)
     {:noreply, new_state}
   end
 
@@ -143,6 +139,13 @@ defmodule Rover do
   def terminate(_reason, state) do
     Rover.Web.WsServer.send_message_to_client(state.name, %{name: state.name, status: "dead"})
     state
+  end
+
+  @spec notify(rover) :: :ok
+  defp notify(state) do
+    WorldMap.update_rover(state.name, state.x, state.y)
+    Rover.Web.WsServer.send_message_to_client(state.name, state)
+    :ok
   end
 
   defp mod(x, y) when x > 0, do: rem(x, y)
