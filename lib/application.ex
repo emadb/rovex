@@ -1,10 +1,10 @@
 defmodule Rover.Application do
   use Application
+  # use Supervisor
 
   @rover_supervisor Application.get_env(:rover, :rover_supervisor)
 
   def start(_type, _args) do
-    import Supervisor.Spec, warn: false
 
     children = [
       Supervisor.child_spec({Registry, [keys: :unique, name: Rover.Registry]}, id: :rover_registry),
@@ -17,8 +17,8 @@ defmodule Rover.Application do
         port: Settings.get_port(),
         dispatch: dispatch()
       ),
-      %{id: @rover_supervisor, start: {@rover_supervisor, :start_link, [[]]}},
-      worker(WorldMap, [@rover_supervisor])
+      Supervisor.child_spec({@rover_supervisor, []}, id: @rover_supervisor),
+      Supervisor.child_spec({WorldMap, @rover_supervisor}, []),
     ]
 
     opts = [strategy: :one_for_one, name: Rover.Supervisor]

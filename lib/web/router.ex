@@ -6,6 +6,7 @@ defmodule Rover.Web.Router do
   plug(:match)
   plug(:dispatch)
 
+
   get "/ping" do
     send_resp(conn, 200, encode(%{message: "pong"}))
   end
