@@ -13,7 +13,8 @@
 
 <body>
   <div class="container">
-    <div class="mars"></div>
+    <div class="dead-message">DEAD</div>
+    <div class="mars" id="mars"></div>
     <div class="controls">
       <h1>Rover Controller</h1>
       <form id="control-form">
@@ -23,13 +24,18 @@
         </div>
         <button type="submit" id="submit">Crea</button>
       </form>
-      <div class="credits">Icons made by 
-        <a href="https://www.flaticon.com/authors/vitaly-gorbachev" title="Vitaly Gorbachev" target="_blank">Vitaly Gorbachev</a> 
-        from <a href="https://www.flaticon.com/" title="Flaticon"  target="_blank">www.flaticon.com</a> 
-        is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a>
+      <div id="score-board"></div>
+      <div class="credits">
+        Icons made by 
+        <a href="http://www.freepik.com" title="Freepik" target="_blank">Freepik</a> 
+        from <a href="https://www.flaticon.com/" title="Flaticon" target="_blank">www.flaticon.com</a> 
+        is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
       </div>
     </div>
   </div>
+  <script type='text/javascript' src='rover.js'></script>
+  <script type='text/javascript' src='mars.js'></script>
+  <script type='text/javascript' src='game.js'></script>
   <script type='text/javascript' src='rovex.js'></script>
 </body>
 </html>
