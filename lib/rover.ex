@@ -28,7 +28,7 @@ defmodule Rover do
 
     Rover.Web.WsServer.send_message_to_client(name, %{
       name: name,
-      status: "born",
+      op: "born",
       x: x,
       y: y,
       direction: d,
@@ -123,10 +123,9 @@ defmodule Rover do
   end
 
   def handle_cast(:update_score, state) do
-    IO.inspect state, label: "update score"
     Rover.Web.WsServer.send_message_to_client(state.name, %{
       name: state.name,
-      status: "update_score",
+      op: "update_score",
       score: state.score + 1
     })
 
@@ -138,7 +137,7 @@ defmodule Rover do
   end
 
   def terminate(_reason, state) do
-    Rover.Web.WsServer.send_message_to_client(state.name, %{name: state.name, status: "dead"})
+    Rover.Web.WsServer.send_message_to_client(state.name, %{name: state.name, op: "die"})
     state
   end
 

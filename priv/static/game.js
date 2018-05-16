@@ -17,10 +17,10 @@ function Game() {
 
   this.connection.onmessage = (evt) => {
     data = JSON.parse(evt.data);
-    const { status, name } = data;
+    const { op, name } = data;
     const isCurrentPlayer = this.currentPlayer && name === this.currentPlayer;
     let finded = this.findRoverByName(name); 
-    switch (status) {
+    switch (op) {
       case 'born':
         if (isCurrentPlayer) {
           this.createCurrentPlayer(data);
@@ -31,7 +31,7 @@ function Game() {
         }
         this.updateScore();
         break;
-      case 'dead':
+      case 'die':
         if (finded){
           if (isCurrentPlayer) {
             document.getElementsByClassName('dead-message')[0].classList.add('dead-message--visible');
