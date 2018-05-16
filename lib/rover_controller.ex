@@ -14,6 +14,17 @@ defmodule RoverController do
     end)
   end
 
+  def simulate(iterations, rover_count) do
+    Enum.each(0..iterations, fn _ ->
+      n = Enum.random(0..rover_count)
+      rover = get_rover_name(n)
+      command = get_random_command()
+      IO.inspect {rover, command}, label: "Sending"
+      send_command(rover, command)
+      # Process.sleep(100)
+    end)
+  end
+
   def send_multiple_commands(rover_count, command_count \\ 1) do
     Enum.each(0..command_count, fn _ -> send_single_command(rover_count) end)
   end

@@ -21,14 +21,15 @@ defmodule WorldMap do
         index -> List.replace_at(state.rovers, index, %{name: name, x: x, y: y})
       end
 
-    case are_there_collisions(new_rovers, name, x, y) do
+    same_position = same_position_fn(name, x, y)
+    case Enum.any?(new_rovers, same_position) do
       true ->
         new_rovers
-        |> Enum.find(&same_position(&1, name, x, y))
+        |> Enum.find(same_position)
         |> state.rover_supervisor.kill
 
         Rover.update_score(name)
-        new_rovers = Enum.reject(new_rovers, &same_position(&1, name, x, y))
+        new_rovers = Enum.reject(new_rovers, same_position)
         {:reply, :ok, %{state | rovers: new_rovers}}
 
       false ->
@@ -36,11 +37,8 @@ defmodule WorldMap do
     end
   end
 
-  defp same_position(r, name, x, y) do
-    r.name != name && r.x == x && r.y == y
+  defp same_position_fn(name, x, y) do
+    fn r -> r.name != name && r.x == x && r.y == y end
   end
 
-  defp are_there_collisions(rovers, name, x, y) do
-    Enum.any?(rovers, fn r -> r.name != name && r.x == x && r.y == y end)
-  end
 end
