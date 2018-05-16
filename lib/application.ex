@@ -10,7 +10,7 @@ defmodule Rover.Application do
       Supervisor.child_spec({Registry, [keys: :duplicate, name: Socket.Registry]}, id: :socket_registry),
       Plug.Adapters.Cowboy.child_spec(:http, Rover.Web.Router, [], port: Settings.get_port(), dispatch: dispatch()),
       Supervisor.child_spec({@rover_supervisor, []}, id: @rover_supervisor),
-      Supervisor.child_spec({WorldMap, @rover_supervisor}, []),
+      Supervisor.child_spec({WorldMap, []}, []),
     ]
 
     opts = [strategy: :one_for_one, name: Rover.Supervisor]

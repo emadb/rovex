@@ -9,14 +9,14 @@ defmodule RoverController do
   def create_multiple_rovers(count) do
     dirs = [:N, :E, :S, :W]
 
-    Enum.each(0..count, fn x ->
+    Enum.each(1..count, fn x ->
       RoverSupervisor.create_rover(get_rover_name(x), Enum.random(0..@world_width), Enum.random(0..@world_height), Enum.at(dirs, Enum.random(0..3)))
     end)
   end
 
   def simulate(iterations, rover_count) do
     Enum.each(0..iterations, fn _ ->
-      n = Enum.random(0..rover_count)
+      n = Enum.random(1..rover_count)
       rover = get_rover_name(n)
       command = get_random_command()
       IO.inspect {rover, command}, label: "Sending"

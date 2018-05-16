@@ -1,12 +1,13 @@
 defmodule WorldMap do
   use GenServer
+  @rover_supervisor Application.get_env(:rover, :rover_supervisor)
 
-  def start_link(rover_supervisor) do
-    GenServer.start_link(__MODULE__, [rover_supervisor], name: WorldMap)
+  def start_link(_) do
+    GenServer.start_link(__MODULE__, [], name: WorldMap)
   end
 
-  def init([rover_supervisor]) do
-    {:ok, %{rover_supervisor: rover_supervisor, rovers: []}}
+  def init([]) do
+    {:ok, %{rovers: []}}
   end
 
   @spec update_rover(String.t, integer, integer) :: :ok
@@ -14,31 +15,24 @@ defmodule WorldMap do
     GenServer.call(__MODULE__, {:update_rover, name, x, y})
   end
 
-  def handle_call({:update_rover, name, x, y}, _from, state) do
-    new_rovers =
-      case Enum.find_index(state.rovers, fn r -> r.name == name end) do
-        nil -> state.rovers ++ [%{name: name, x: x, y: y}]
-        index -> List.replace_at(state.rovers, index, %{name: name, x: x, y: y})
+  defp update_rover_list(rovers, name, x, y) do
+      case Enum.find_index(rovers, fn r -> r.name == name end) do
+        nil -> rovers ++ [%{name: name, x: x, y: y}]
+        index -> List.replace_at(rovers, index, %{name: name, x: x, y: y})
       end
+  end
 
-    same_position = same_position_fn(name, x, y)
-    case Enum.any?(new_rovers, same_position) do
-      true ->
-        new_rovers
-        |> Enum.find(same_position)
-        |> state.rover_supervisor.kill
+  def handle_call({:update_rover, name, x, y}, _from, state) do
+    rover_list = update_rover_list(state.rovers, name, x, y)
 
+    case Enum.find(rover_list, fn r -> r.name != name && r.x == x && r.y == y end) do
+      nil ->
+        {:reply, :ok, %{state | rovers: rover_list}}
+      rover_to_kill ->
+        @rover_supervisor.kill(rover_to_kill)
         Rover.update_score(name)
-        new_rovers = Enum.reject(new_rovers, same_position)
-        {:reply, :ok, %{state | rovers: new_rovers}}
-
-      false ->
+        new_rovers = List.delete(rover_list, rover_to_kill)
         {:reply, :ok, %{state | rovers: new_rovers}}
     end
   end
-
-  defp same_position_fn(name, x, y) do
-    fn r -> r.name != name && r.x == x && r.y == y end
-  end
-
 end
