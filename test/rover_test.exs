@@ -3,9 +3,9 @@ defmodule RoverTest do
   doctest Rover
 
   test "get_state should return current state" do
-    {:ok, _} = Rover.start_link({1, 3, :N, "rover1"})
-    {:ok, state} = Rover.get_state("rover1")
-    assert state == {1, 3, :N, 0}
+    {:ok, _} = Rover.start_link({9, 9, :N, "rover0"})
+    {:ok, state} = Rover.get_state("rover0")
+    assert state == {9, 9, :N, 0}
   end
 
   test "handle_call :get_state should return current state" do
@@ -22,13 +22,6 @@ defmodule RoverTest do
     assert state.direction == :N
   end
 
-  test "handle_cast :rotate_left should return updated state" do
-    {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :N})
-    assert state.x == 1
-    assert state.y == 3
-    assert state.direction == :W
-  end
-
   test "handle_cast :go_backward should return updated state" do
     {:noreply, state} = Rover.handle_cast(:go_backward, %Rover{x: 1, y: 3, direction: :N})
     assert state.x == 1
@@ -36,11 +29,64 @@ defmodule RoverTest do
     assert state.direction == :N
   end
 
-  test "handle_cast :rotate_right should return updated state" do
-    {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :N})
-    assert state.x == 1
-    assert state.y == 3
-    assert state.direction == :E
+  describe "rotate_left" do
+    test "handle_cast :rotate_left should return updated state (N)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :N})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :W
+    end
+
+    test "handle_cast :rotate_left should return updated state (S)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :S})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :E
+    end
+
+    test "handle_cast :rotate_left should return updated state (E)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :E})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :N
+    end
+
+    test "handle_cast :rotate_left should return updated state (W)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_left, %Rover{x: 1, y: 3, direction: :W})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :S
+    end
+  end
+
+  describe "rotate_right" do
+    test "handle_cast :rotate_right should return updated state (N)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :N})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :E
+    end
+
+    test "handle_cast :rotate_right should return updated state (S)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :S})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :W
+    end
+
+    test "handle_cast :rotate_right should return updated state (E)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :E})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :S
+    end
+
+    test "handle_cast :rotate_right should return updated state (W)" do
+      {:noreply, state} = Rover.handle_cast(:rotate_right, %Rover{x: 1, y: 3, direction: :W})
+      assert state.x == 1
+      assert state.y == 3
+      assert state.direction == :N
+    end
   end
 
   describe "world wrap" do
@@ -101,9 +147,10 @@ defmodule RoverTest do
     end
 
     test "handle_cast :update_score should add 1" do
-      {:noreply, state} = Rover.handle_cast(:update_score, %Rover{x: 9, y: 2, direction: :W, score: 7})
+      {:noreply, state} =
+        Rover.handle_cast(:update_score, %Rover{x: 9, y: 2, direction: :W, score: 7})
+
       assert state.score == 8
     end
-
   end
 end

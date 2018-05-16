@@ -123,6 +123,7 @@ defmodule Rover do
   end
 
   def handle_cast(:update_score, state) do
+    IO.inspect state, label: "update score"
     Rover.Web.WsServer.send_message_to_client(state.name, %{
       name: state.name,
       status: "update_score",
