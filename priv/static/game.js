@@ -33,8 +33,10 @@ function Game() {
         break;
       case 'die':
         if (finded){
+          finded.dead = true;
           if (isCurrentPlayer) {
             document.getElementsByClassName('dead-message')[0].classList.add('dead-message--visible');
+            document.getElementById('regenerate').style.display = 'block';
           }
           const deadRover = document.getElementById(finded.domId);
           if(deadRover){
@@ -76,6 +78,11 @@ function Game() {
       }
     }
   });
+
+  document.getElementById('regenerate').addEventListener('click', function(){
+    document.getElementById('regenerate').style.display = 'none';
+    document.getElementsByClassName('dead-message')[0].classList.remove('dead-message--visible');
+  });
 }
 
 Game.prototype.setCurrentPlayer = function(name){
@@ -107,6 +114,7 @@ Game.prototype.createDomRover = function(rover) {
   const domRover = document.createElement('div');
   domRover.classList.add('rover');
   domRover.id = rover.domId;
+  domRover.innerHTML = `<div class="rover-icon"></div><p>${rover.name}</p>`;
   return domRover;
 }
 
@@ -139,7 +147,8 @@ Game.prototype.findRoverByName = function(name) {
 
 Game.prototype.updateScore = function() {
   const scoreboardText = this.players.sort(sortFunction).reduce((acc, p) => {
-    return acc = acc + `<li>${p.name}: ${p.score}</li>`;
+    const dead = p.dead ? '(dead)' : '';
+    return acc = acc + `<li>${p.name}: ${p.score} ${dead}</li>`;
   }, '<h2>Score Board</h2><ol id="score-board">');
 
   this.scoreBoard.innerHTML = scoreboardText + '</ol>';

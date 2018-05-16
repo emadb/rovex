@@ -16,6 +16,7 @@ function Rover(name, x, y , d, score) {
   this.y = y ? y : generateRandomPos();
   this.direction = d ? d : generateRandomDirection();
   this.score = score ? score : 0;
+  this.dead = false;
 }
 
 Rover.prototype.updatePosition = function(x, y) {
