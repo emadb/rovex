@@ -9,6 +9,7 @@ function Game() {
 
   this.connection.onopen = () => {
     console.log('connection ready');
+    heartBeat = setInterval(() => this.connection.send('ping'), 5000);
   }
 
   this.connection.onerror = (err) => {
@@ -16,55 +17,57 @@ function Game() {
   }
 
   this.connection.onmessage = (evt) => {
-    data = JSON.parse(evt.data);
-    const { op, name } = data;
-    const isCurrentPlayer = this.currentPlayer && name === this.currentPlayer;
-    let finded = this.findRoverByName(name); 
-    switch (op) {
-      case 'born':
-        if (isCurrentPlayer) {
-          this.createCurrentPlayer(data);
-        } else {
-          if (!finded){
-            this.addPlayer(data);
-          } 
-        }
-        this.updateScore();
-        break;
-      case 'die':
-        if (finded){
-          finded.dead = true;
+    if(evt && evt.data !== 'pong'){
+      data = JSON.parse(evt.data);
+      const { op, name } = data;
+      const isCurrentPlayer = this.currentPlayer && name === this.currentPlayer;
+      let finded = this.findRoverByName(name); 
+      switch (op) {
+        case 'born':
           if (isCurrentPlayer) {
-            document.getElementsByClassName('dead-message')[0].classList.add('dead-message--visible');
-            document.getElementById('regenerate').style.display = 'block';
-            document.getElementById('name').removeAttribute('readonly');
-          }
-          const deadRover = document.getElementById(finded.domId);
-          if(deadRover){
-            deadRover.remove();
-          }
-        }
-        break;
-      case 'update_score':  
-        if (finded){
-          finded.score = data.score;
-          this.updateScore();
-        }
-        break;
-      default:
-        const { x, y, direction, score } = data;
-        console.log(x, y, name);
-        if (!finded) {
-          this.addPlayer(data);
-        } else { 
-          finded = Object.assign(finded, {x, y, direction, score});
-          if (isCurrentPlayer) {
-            this.moveCurrentPlayer(finded);
+            this.createCurrentPlayer(data);
           } else {
-            this.movePlayer(finded);
+            if (!finded){
+              this.addPlayer(data);
+            } 
           }
-        }
-        this.updateScore();
+          this.updateScore();
+          break;
+        case 'die':
+          if (finded){
+            finded.dead = true;
+            if (isCurrentPlayer) {
+              document.getElementsByClassName('dead-message')[0].classList.add('dead-message--visible');
+              document.getElementById('regenerate').style.display = 'block';
+              document.getElementById('name').removeAttribute('readonly');
+            }
+            const deadRover = document.getElementById(finded.domId);
+            if(deadRover){
+              deadRover.remove();
+            }
+          }
+          break;
+        case 'update_score':  
+          if (finded){
+            finded.score = data.score;
+            this.updateScore();
+          }
+          break;
+        default:
+          const { x, y, direction, score } = data;
+          console.log(x, y, name);
+          if (!finded) {
+            this.addPlayer(data);
+          } else { 
+            finded = Object.assign(finded, {x, y, direction, score});
+            if (isCurrentPlayer) {
+              this.moveCurrentPlayer(finded);
+            } else {
+              this.movePlayer(finded);
+            }
+          }
+          this.updateScore();
+      }
     }
   }
 
