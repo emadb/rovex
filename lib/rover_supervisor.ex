@@ -16,6 +16,5 @@ defmodule RoverSupervisor do
   def kill(rover) do
     pid = RegistryHelper.get_pid(rover.name)
     DynamicSupervisor.terminate_child(__MODULE__, pid)
-    # Process.exit(pid, :collision)
   end
 end

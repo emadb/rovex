@@ -30,6 +30,8 @@ defmodule WorldMap do
         {:reply, :ok, %{state | rovers: rover_list}}
       rover_to_kill ->
         @rover_supervisor.kill(rover_to_kill)
+        # pid = RegistryHelper.get_pid(rover_to_kill.name)
+        # Process.exit(pid, :collision)
         Rover.update_score(name)
         new_rovers = List.delete(rover_list, rover_to_kill)
         {:reply, :ok, %{state | rovers: new_rovers}}
