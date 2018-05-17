@@ -5,8 +5,8 @@ use Mix.Config
 config :rover,
   http_port: "3000",
   rover_supervisor: RoverSupervisor,
-  world_width: 50,
-  world_height: 50
+  world_width: 100,
+  world_height: 100
 
 import_config "#{Mix.env()}.exs"
 

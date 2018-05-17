@@ -51,15 +51,17 @@ function Game() {
         }
         break;
       default:
+        const { x, y, direction, score } = data;
+        console.log(x, y, name);
         if (!finded) {
           this.addPlayer(data);
-        }
-        const { x, y, direction, score } = data;
-        finded = Object.assign(finded, {x, y, direction, score});
-        if (isCurrentPlayer) {
-          this.moveCurrentPlayer(finded);
-        } else {
-          this.movePlayer(finded);
+        } else { 
+          finded = Object.assign(finded, {x, y, direction, score});
+          if (isCurrentPlayer) {
+            this.moveCurrentPlayer(finded);
+          } else {
+            this.movePlayer(finded);
+          }
         }
         this.updateScore();
     }

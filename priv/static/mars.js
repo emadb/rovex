@@ -12,7 +12,7 @@ Mars.prototype.moveSpace = function(left, top) {
   const bodyCenterLeft =  (bodyWidth / 2) - 20;
 
   const tLeft = left * 40  + 2000;
-  const tTop = ((49 - top) * 40) + 2000;
+  const tTop = ((99 - top) * 40) + 2000;
 
   const leftTranslation = bodyCenterLeft - tLeft;
   const topTranslation = bodyCenterTop - tTop;

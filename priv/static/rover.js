@@ -25,7 +25,7 @@ Rover.prototype.updatePosition = function(x, y) {
 }
 
 Rover.prototype.getTranslation = function() {
-  const top = ((49 - this.y) * 40) + 2000;
+  const top = ((99 - this.y) * 40) + 2000;
   const left = (this.x * 40) + 2000;
   return `translate(${left}px, ${top}px)`;
 }

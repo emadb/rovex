@@ -15,8 +15,8 @@ html, body{
 }
 
 .mars{
-  width: 6000px;
-  height: 6000px;
+  width: 8000px;
+  height: 8000px;
   position: relative;
   background-color: transparent;
   background-image: url('mars-bg.jpg');
@@ -27,7 +27,7 @@ html, body{
 }
 
 .mars--transition {
-  transition-duration: 0.3s;
+  /* transition-duration: 0.3s; */
 }
 
 
@@ -93,7 +93,7 @@ html, body{
   left: 0;
   width: 40px;
   height: 40px;
-  transition: all 0.5s linear;
+  /* transition: all 0.5s linear; */
 }
 
 .rover .rover-icon{
