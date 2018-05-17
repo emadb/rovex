@@ -184,3 +184,10 @@ html, body{
 #score-board li {
   margin-bottom: 5px;
 }
+
+#error {
+  color: red;
+  font-size: 10px;
+  margin-top: 20px;
+  display: none;
+}

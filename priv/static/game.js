@@ -37,6 +37,7 @@ function Game() {
           if (isCurrentPlayer) {
             document.getElementsByClassName('dead-message')[0].classList.add('dead-message--visible');
             document.getElementById('regenerate').style.display = 'block';
+            document.getElementById('name').removeAttribute('readonly');
           }
           const deadRover = document.getElementById(finded.domId);
           if(deadRover){
