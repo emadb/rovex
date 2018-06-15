@@ -51,9 +51,10 @@ defmodule RoverController do
     Rover.rotate_right(name)
   end
 
+  # More priority to F so we have multiple F commands
   defp get_random_command do
-    commands = [:F, :B, :L, :R, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F]
-    Enum.at(commands, Enum.random(0..(Enum.count(commands) -1)))
+    [:F, :B, :L, :R, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F, :F]
+    |> Enum.random
   end
 
   defp get_rover_name(n) do
