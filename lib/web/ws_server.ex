@@ -1,6 +1,6 @@
 defmodule Rover.Web.WsServer do
   @behaviour :cowboy_websocket_handler
-  @timeout 5 * 60000
+  @timeout 5 * 60_000
   @registration_key "ws_server"
 
   def send_message_to_client(_rover, message) do

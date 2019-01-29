@@ -99,10 +99,10 @@ defmodule Rover do
   def handle_cast(:rotate_right, state) do
     new_state =
       case state.direction do
-        :N -> %Rover{state | x: state.x, y: state.y, direction: :E}
-        :S -> %Rover{state | x: state.x, y: state.y, direction: :W}
-        :E -> %Rover{state | x: state.x, y: state.y, direction: :S}
-        :W -> %Rover{state | x: state.x, y: state.y, direction: :N}
+        :N -> %Rover{state | direction: :E}
+        :S -> %Rover{state | direction: :W}
+        :E -> %Rover{state | direction: :S}
+        :W -> %Rover{state | direction: :N}
       end
 
     notify(new_state)
@@ -112,10 +112,10 @@ defmodule Rover do
   def handle_cast(:rotate_left, state) do
     new_state =
       case state.direction do
-        :N -> %Rover{state | x: state.x, y: state.y, direction: :W}
-        :S -> %Rover{state | x: state.x, y: state.y, direction: :E}
-        :E -> %Rover{state | x: state.x, y: state.y, direction: :N}
-        :W -> %Rover{state | x: state.x, y: state.y, direction: :S}
+        :N -> %Rover{state | direction: :W}
+        :S -> %Rover{state | direction: :E}
+        :E -> %Rover{state | direction: :N}
+        :W -> %Rover{state | direction: :S}
       end
 
     notify(new_state)

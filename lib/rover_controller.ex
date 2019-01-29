@@ -19,7 +19,6 @@ defmodule RoverController do
       n = Enum.random(1..rover_count)
       rover = get_rover_name(n)
       command = get_random_command()
-      IO.inspect {rover, command}, label: "Sending"
       send_command(rover, command)
       # Process.sleep(100)
     end)
