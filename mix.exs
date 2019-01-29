@@ -32,7 +32,8 @@ defmodule Rover.MixProject do
       {:cowboy, "~> 1.0"},
       {:poison, "~> 3.1"},
       {:dialyxir, "~> 0.5", only: [:dev], runtime: false},
-      {:excoveralls, "~> 0.8", only: :test}
+      {:excoveralls, "~> 0.8", only: :test},
+      {:credo, "~> 0.10.0", only: [:dev, :test], runtime: false}
     ]
   end
 end
