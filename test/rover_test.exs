@@ -9,6 +9,12 @@ defmodule RoverTest do
 
   test "get rover state" do
     {:ok, _} = start_supervised({Rover, [1, {1, 1}]})
-    assert %{id: 1, pos: {1, 1}, move_count: 0} == Rover.get_state(1)
+    assert %{id: 1, pos: {1, 1}, move_count: 0, direction: :north} == Rover.get_state(1)
+  end
+
+  test "send command" do
+    {:ok, _} = start_supervised({Rover, [1, {1, 1}]})
+    Rover.send(1, "F")
+    assert %{id: 1, pos: {1, 0}, move_count: 1, direction: :north} == Rover.get_state(1)
   end
 end
