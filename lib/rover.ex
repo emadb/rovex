@@ -9,7 +9,7 @@ defmodule Mars.Rover do
     {:ok, %{id: id, pos: {x, y}, move_count: 0}}
   end
 
-  def get(id) do
+  def get_state(id) do
     GenServer.call({:via, :global, id}, :get_state)
   end
 
