@@ -21,12 +21,37 @@ defmodule Mars.Rover do
     {:reply, state, state}
   end
 
-  def handle_call(
-        {:send, "F"},
-        _from,
-        state = %{pos: {x, y}, move_count: count, direction: :north}
-      ) do
-    new_state = %{state | pos: {x, y - 1}, move_count: count + 1}
+  def handle_call({:send, cmd}, _from, state) do
+    %{pos: {x, y}, move_count: count, direction: direction} = state
+
+    new_state = %{
+      state
+      | pos: move(cmd, direction, {x, y}),
+        direction: rotate(cmd, direction),
+        move_count: count + 1
+    }
+
     {:reply, :ok, new_state}
   end
+
+  defp move("F", :north, {x, y}), do: {x, y - 1}
+  defp move("F", :south, {x, y}), do: {x, y + 1}
+  defp move("F", :east, {x, y}), do: {x + 1, y}
+  defp move("F", :west, {x, y}), do: {x - 1, y}
+
+  defp move("B", :north, {x, y}), do: {x, y + 1}
+  defp move("B", :south, {x, y}), do: {x, y - 1}
+  defp move("B", :east, {x, y}), do: {x - 1, y}
+  defp move("B", :west, {x, y}), do: {x + 1, y}
+
+  defp rotate("L", :north), do: :west
+  defp rotate("L", :west), do: :south
+  defp rotate("L", :south), do: :east
+  defp rotate("L", :east), do: :north
+
+  defp rotate("R", :north), do: :east
+  defp rotate("R", :west), do: :north
+  defp rotate("R", :south), do: :west
+  defp rotate("R", :east), do: :south
+  defp rotate(_, dir), do: dir
 end
