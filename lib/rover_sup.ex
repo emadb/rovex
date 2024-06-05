@@ -9,7 +9,7 @@ defmodule Mars.RoverSup do
     DynamicSupervisor.init(strategy: :one_for_one)
   end
 
-  def create_rover(id, {x, y}) do
-    DynamicSupervisor.start_child(__MODULE__, {Mars.Rover, [id, {x, y}]})
+  def create_rover(id, {x, y}, dir \\ :north) do
+    DynamicSupervisor.start_child(__MODULE__, {Mars.Rover, [id, {x, y}, dir]})
   end
 end
