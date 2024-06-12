@@ -1,1 +1,0 @@
-web: elixir --sname rovex --cookie rovexcookieapp -S mix run --no-halt
