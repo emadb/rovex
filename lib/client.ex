@@ -1,4 +1,4 @@
-defmodule U do
+defmodule Client do
   def create_rovers(n) do
     Enum.map(1..n, &Mars.RoverSup.create_rover(&1, {Enum.random(1..1000), Enum.random(1..1000)}))
   end

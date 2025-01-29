@@ -10,7 +10,7 @@ defmodule Mars.Rover do
   end
 
   def init([id, {x, y}, dir]) do
-    {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0}}
+    {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0}, {:continue, :post_init}}
   end
 
   def get_state(id) do
@@ -25,19 +25,38 @@ defmodule Mars.Rover do
     GenServer.call({:via, :global, id}, {:send, [cmd]})
   end
 
+  def handle_continue(:post_init, state) do
+    Process.send_after(self(), :explore, Enum.random(1000..3000))
+    {:noreply, state}
+  end
+
+  def handle_info(:explore, state) do
+    Process.send_after(self(), :explore, Enum.random(1000..3000))
+
+    new_state =
+      ["L", "R", "F", "B"]
+      |> Enum.random()
+      |> then(fn c -> move([c], state) end)
+
+    {:noreply, new_state}
+  end
+
   def handle_call(:get_state, _from, state) do
     {:reply, state, state}
   end
 
   def handle_call({:send, cmd}, _from, state) do
-    new_state =
-      Enum.reduce(cmd, state, fn c, acc ->
-        acc
-        |> Map.merge(apply_command(c, acc))
-        |> Map.merge(%{move_count: acc.move_count + 1})
-      end)
+    new_state = move(cmd, state)
 
     {:reply, :ok, new_state}
+  end
+
+  defp move(cmd, state) do
+    Enum.reduce(cmd, state, fn c, acc ->
+      acc
+      |> Map.merge(apply_command(c, acc))
+      |> Map.merge(%{move_count: acc.move_count + 1})
+    end)
   end
 
   defp apply_command(cmd, %{pos: {x, y}, direction: direction}) do
