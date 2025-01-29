@@ -10,6 +10,8 @@ defmodule Mars.Rover do
   end
 
   def init([id, {x, y}, dir]) do
+    IO.inspect(id, label: "Starting")
+
     {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0, points: 0},
      {:continue, :post_init}}
   end
@@ -39,7 +41,13 @@ defmodule Mars.Rover do
       |> Enum.random()
       |> then(fn c -> move([c], state) end)
 
-    {:noreply, new_state}
+    crash? = Enum.random(1..10) == 1
+
+    if crash? do
+      {:stop, :crashed, new_state}
+    else
+      {:noreply, new_state}
+    end
   end
 
   def handle_call(:get_state, _from, state) do
@@ -50,6 +58,13 @@ defmodule Mars.Rover do
     new_state = move(cmd, state)
 
     {:reply, :ok, new_state}
+  end
+
+  def terminate(reason, state) do
+    # The following restart values are supported in the :restart option:
+    # :permanent - the child process is always restarted.
+    # :temporary - the child process is never restarted, regardless of the supervision strategy: any termination (even abnormal) is considered successful.
+    # :transient - the child process is restarted only if it terminates abnormally, i.e., with an exit reason other than :normal, :shutdown, or {:shutdown, term}.
   end
 
   defp move(cmd, state) do
