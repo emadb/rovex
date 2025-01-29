@@ -10,7 +10,8 @@ defmodule Mars.Rover do
   end
 
   def init([id, {x, y}, dir]) do
-    {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0}, {:continue, :post_init}}
+    {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0, points: 0},
+     {:continue, :post_init}}
   end
 
   def get_state(id) do
@@ -52,11 +53,25 @@ defmodule Mars.Rover do
   end
 
   defp move(cmd, state) do
-    Enum.reduce(cmd, state, fn c, acc ->
-      acc
-      |> Map.merge(apply_command(c, acc))
-      |> Map.merge(%{move_count: acc.move_count + 1})
-    end)
+    new_state =
+      Enum.reduce(cmd, state, fn c, acc ->
+        acc
+        |> Map.merge(apply_command(c, acc))
+        |> Map.merge(%{move_count: acc.move_count + 1})
+      end)
+
+    case Mars.World.pick(new_state.pos) do
+      :found ->
+        Phoenix.PubSub.broadcast(:rover_pubsub, "points", %{
+          id: state.id,
+          points: state.points + 1
+        })
+
+        %{new_state | points: state.points + 1}
+
+      :not_found ->
+        new_state
+    end
   end
 
   defp apply_command(cmd, %{pos: {x, y}, direction: direction}) do
