@@ -26,7 +26,11 @@ defmodule Mars.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:phoenix_pubsub, "~> 2.1"}
+      {:phoenix_pubsub, "~> 2.1"},
+      {:plug, "~> 1.16"},
+      {:cowboy, "~> 2.12"},
+      {:plug_cowboy, "~> 2.7"},
+      {:jason, "~> 1.4"}
     ]
   end
 end

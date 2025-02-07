@@ -11,8 +11,12 @@ defmodule Mars.Application do
     children = [
       {Mars.RoverSup, []},
       {Mars.World, coords},
-      {Phoenix.PubSub, name: :rover_pubsub}
+      {Phoenix.PubSub, name: :rover_pubsub},
+      {Rovex.PointLogger, []},
+      {Plug.Cowboy, scheme: :http, plug: MainRouter, options: [port: 4000]}
     ]
+
+    :ets.new(:rover_state, [:set, :public, :named_table])
 
     opts = [strategy: :one_for_one, name: Mars.Supervisor]
     Supervisor.start_link(children, opts)

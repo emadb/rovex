@@ -10,8 +10,6 @@ defmodule Mars.Rover do
   end
 
   def init([id, {x, y}, dir]) do
-    IO.inspect(id, label: "Starting")
-
     {:ok, %{id: id, pos: {x, y}, direction: dir, move_count: 0, points: 0},
      {:continue, :post_init}}
   end
@@ -30,7 +28,11 @@ defmodule Mars.Rover do
 
   def handle_continue(:post_init, state) do
     Process.send_after(self(), :explore, Enum.random(1000..3000))
-    {:noreply, state}
+
+    case :ets.lookup(:rover_state, state.id) do
+      [{_, saved_state}] -> {:noreply, saved_state}
+      [] -> {:noreply, state}
+    end
   end
 
   def handle_info(:explore, state) do
@@ -60,7 +62,8 @@ defmodule Mars.Rover do
     {:reply, :ok, new_state}
   end
 
-  def terminate(_reason, _state) do
+  def terminate(_reason, state) do
+    :ets.insert(:rover_state, {state.id, state})
   end
 
   defp move(cmd, state) do
@@ -73,6 +76,8 @@ defmodule Mars.Rover do
 
     case Mars.World.pick(new_state.pos) do
       :found ->
+        IO.inspect(state.id, label: ">>>>>state.>")
+
         Phoenix.PubSub.broadcast(:rover_pubsub, "points", %{
           id: state.id,
           points: state.points + 1
