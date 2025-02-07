@@ -60,11 +60,7 @@ defmodule Mars.Rover do
     {:reply, :ok, new_state}
   end
 
-  def terminate(reason, state) do
-    # The following restart values are supported in the :restart option:
-    # :permanent - the child process is always restarted.
-    # :temporary - the child process is never restarted, regardless of the supervision strategy: any termination (even abnormal) is considered successful.
-    # :transient - the child process is restarted only if it terminates abnormally, i.e., with an exit reason other than :normal, :shutdown, or {:shutdown, term}.
+  def terminate(_reason, _state) do
   end
 
   defp move(cmd, state) do
